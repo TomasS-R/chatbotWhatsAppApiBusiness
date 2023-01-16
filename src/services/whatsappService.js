@@ -7,12 +7,12 @@ function SendMessageWhatsApp(data){
     const options = {
         host:"graph.facebook.com",
         //Cambiar ID de telefono para produccion o desarrollo
-        path:"/v15.0/110624388589441/messages",
+        path:"/v15.0/{ID de telefono}/messages",
         method:"POST",
         body:data,
         headers: {
             "Content-Type":"application/json",
-            Authorization:"Bearer EAAWNbICfuWEBAK5ObPbDborZC7VVjzDdaPYr4lcndFMGHhnEuWUJS9jDsSCbLMlAz5IwlxvnktZCWPRH9z2HynoEU1DWGVmwscndlhvUflj3rAGvjAFIWvZA9PZCKzyA0BYqd7Pwhd9uZBwCLlkDXj2rRmTIP0yAv0zQqGszJZCZAyW3hewYJbiVEvaEpFnNTxXPTV7SCZAQLwZDZD"
+            Authorization:"Bearer {TOKEN PERMANENTE O TEMPORAL}"
         }
     };
     const req = https.request(options, res => {
