@@ -1,0 +1,20 @@
+{
+  "name": "apiwhatsapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "libphonenumber-js": "^1.10.18"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

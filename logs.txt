@@ -1,0 +1,70 @@
+Mensaje: Hola desde Postman! De: 5491156903459
+{
+  from: '5491156903459',
+  id: 'wamid.HBgLNTE5NDM2NjI5NjQVAgASGBQzQUNCODUzN0U1QkU5MkZENTFBQwA=',
+  Timestamp: '1660362642',
+  type: 'text',
+  text: { body: 'Hola desde Postman!' },
+  interactive: null,
+  image: null,
+  audio: null,
+  video: null,
+  document: null,
+  sticker: null,
+  location: null,
+  contacts: null,
+  system: null
+}
+[
+  {
+    from: '5491156903459',
+    id: 'wamid.HBgLNTE5NDM2NjI5NjQVAgASGBQzQUNCODUzN0U1QkU5MkZENTFBQwA=',
+    Timestamp: '1660362642',
+    type: 'text',
+    text: { body: 'Hola desde Postman!' },
+    interactive: null,
+    image: null,
+    audio: null,
+    video: null,
+    document: null,
+    sticker: null,
+    location: null,
+    contacts: null,
+    system: null
+  }
+]
+Mensaje: Hola desde Postman! De: 5491156903459
+{
+  from: '5491156903459',
+  id: 'wamid.HBgLNTE5NDM2NjI5NjQVAgASGBQzQUNCODUzN0U1QkU5MkZENTFBQwA=',
+  Timestamp: '1660362642',
+  type: 'text',
+  text: { body: 'Hola desde Postman!' },
+  interactive: null,
+  image: null,
+  audio: null,
+  video: null,
+  document: null,
+  sticker: null,
+  location: null,
+  contacts: null,
+  system: null
+}
+[
+  {
+    from: '5491156903459',
+    id: 'wamid.HBgLNTE5NDM2NjI5NjQVAgASGBQzQUNCODUzN0U1QkU5MkZENTFBQwA=',
+    Timestamp: '1660362642',
+    type: 'text',
+    text: { body: 'Hola desde Postman!' },
+    interactive: null,
+    image: null,
+    audio: null,
+    video: null,
+    document: null,
+    sticker: null,
+    location: null,
+    contacts: null,
+    system: null
+  }
+]
