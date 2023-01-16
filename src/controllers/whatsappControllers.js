@@ -1,6 +1,7 @@
 const fs = require("fs");
 const myConsole = new console.Console(fs.createWriteStream("./logs.txt"));
-const whatsappService = require("../services/whatsappService")
+const whatsappService = require("../services/whatsappService");
+const models = require("../shared/models");
 
 const VerifyToken = (req, res) => {
 
@@ -29,14 +30,44 @@ const ReceivedMessage = (req, res) => {
 
         if(typeof messageObject != "undefined"){
             var messages = messageObject[0];
-            var text = GetTextUser(messages);
             var number = messages["from"];
-
-            myConsole.log("Mensaje: " + text + " De: " + number);
-            whatsappService.SendMessageWhatsApp("el usuario dijo: " + text, number);
             
-            myConsole.log(messages);
-            myConsole.log(messageObject);
+            var num = models.numero(number);
+            var text = GetTextUser(messages);
+            
+            if (text == "text"){
+                var data = models.Text("Hola Internauta!",num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "image"){
+                var data = models.Image(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "video"){
+                var data = models.Video(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "audio"){
+                var data = models.Audio(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "button"){
+                var data = models.Buttons(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "list"){
+                var data = models.List(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else if (text == "location"){
+                var data = models.Location(num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+            else{
+                var data = models.Text("Ups! no entiendí lo que me quisiste decir.",num);
+                whatsappService.SendMessageWhatsApp(data);
+            }
+
         }
 
         res.send("EVENT_RECEIVED");

@@ -1,27 +1,8 @@
 const fs = require("fs");
 const https = require("https");
 const myConsole = new console.Console(fs.createWriteStream("./logsService.txt"));
-const {parse} = require('libphonenumber-js');
 
-function SendMessageWhatsApp(textResponse, number){
-    //parsear el numero y sacar el codigo de area (+54)
-    let parsedNumber = parse("+"+number);
-    let country= parsedNumber.country;
-    myConsole.log("Código de país:", country );
-    let numeroSin9 = number;
-    if (country == "AR"){
-        numeroSin9 = number.replace("9", "", 1);
-    }
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",    
-        "recipient_type": "individual",
-        "to": numeroSin9,
-        "type": "text",
-        "text": {
-            "preview_url": false,
-            "body": textResponse
-        }
-    });
+function SendMessageWhatsApp(data){
 
     const options = {
         host:"graph.facebook.com",
