@@ -1,13 +1,12 @@
 const fs = require("fs");
 const myConsole = new console.Console(fs.createWriteStream("./logsModels.txt"));
-const {parse} = require('libphonenumber-js');
+const {parse} = require("libphonenumber-js");
 
 function numero(number){
     //parsear el numero y sacar el codigo de area (+54)
     let parsedNumber = parse("+"+number);
     let country = parsedNumber.country;
 
-    //myConsole.log("Código de país:",country);
     let numeroSin9 = number;
     if (country == "AR") {
         numeroSin9 = number.replace("9","",1);

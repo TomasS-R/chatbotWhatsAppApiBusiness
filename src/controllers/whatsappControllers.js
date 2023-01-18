@@ -2,11 +2,12 @@ const fs = require("fs");
 const myConsole = new console.Console(fs.createWriteStream("./logs.txt"));
 const whatsappService = require("../services/whatsappService");
 const models = require("../shared/models");
+const config = require("../config")
 
 const VerifyToken = (req, res) => {
 
     try {
-        var accessToken = "456E7GRG46RH898H6H56T6H6HF6BF";
+        var accessToken = config.ACCESSTOKEN;
         var token = req.query["hub.verify_token"];
         var challenge = req.query["hub.challenge"];
 
