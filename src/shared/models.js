@@ -1,21 +1,3 @@
-const fs = require("fs");
-const myConsole = new console.Console(fs.createWriteStream("./logsModels.txt"));
-const {parse} = require("libphonenumber-js");
-
-function numero(number){
-    //parsear el numero y sacar el codigo de area (+54)
-    let parsedNumber = parse("+"+number);
-    let country = parsedNumber.country;
-
-    let numeroSin9 = number;
-    if (country == "AR") {
-        numeroSin9 = number.replace("9","",1);
-    }
-    myConsole.log("Numero sin 9:", numeroSin9);
-    
-    return numeroSin9;
-}
-
 function Text(textResponse, number){
     
     const data = JSON.stringify({
@@ -206,7 +188,6 @@ function Location(number){
 }
 
 module.exports = {
-    numero,
     Text,
     Image,
     Audio,

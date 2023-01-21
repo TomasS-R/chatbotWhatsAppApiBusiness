@@ -1,8 +1,7 @@
 const fs = require("fs");
 const myConsole = new console.Console(fs.createWriteStream("./logs.txt"));
-const whatsappService = require("../services/whatsappService");
-const models = require("../shared/models");
-const config = require("../config")
+const config = require("../config");
+const processMessage = require("../shared/processMessage");
 
 const VerifyToken = (req, res) => {
 
@@ -33,40 +32,13 @@ const ReceivedMessage = (req, res) => {
             var messages = messageObject[0];
             var number = messages["from"];
             
-            var num = models.numero(number);
+            // Verifico si el numero es correcto, si no le quita el 9
+            var num = processMessage.numero(number);
+            // Recibe el mensaje del usuario
             var text = GetTextUser(messages);
             
-            if (text == "text"){
-                var data = models.Text("Hola Internauta!",num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "image"){
-                var data = models.Image(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "video"){
-                var data = models.Video(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "audio"){
-                var data = models.Audio(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "button"){
-                var data = models.Buttons(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "list"){
-                var data = models.List(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else if (text == "location"){
-                var data = models.Location(num);
-                whatsappService.SendMessageWhatsApp(data);
-            }
-            else{
-                var data = models.Text("Ups! no entiendí lo que me quisiste decir.",num);
-                whatsappService.SendMessageWhatsApp(data);
+            if (text != ""){
+                processMessage.Process(text,num);
             }
 
         }
