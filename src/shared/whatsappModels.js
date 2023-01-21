@@ -1,7 +1,3 @@
-const fs = require("fs");
-const myConsole = new console.Console(fs.createWriteStream("./logWAModel.txt"));
-
-
 function MessageText(textResponse, number){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    

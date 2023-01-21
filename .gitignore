@@ -1,5 +1,6 @@
-.env
+
 logsModels.txt
 logsService.txt
 logs.txt
-node_modules
+/node_modules
+/.vscode

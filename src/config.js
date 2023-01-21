@@ -1,8 +1,8 @@
 const dotenv = require('dotenv').config({path: './src/.env'});
 
-const ACCESSTOKEN=process.env.ACCESSTOKEN;
-const TOKEN=process.env.TOKEN;
-const IDPHONE=process.env.IDPHONE;
+const ACCESSTOKEN=process.env.ACCESSTOKEN || `YOUR ACCESSTOKEN OF FACEBOOK HERE FOR JOBS IN LOCAL ENVIRONMENT`;
+const TOKEN=process.env.TOKEN || `YOUR TOKEN OF FACEBOOK HERE FOR JOBS IN LOCAL ENVIRONMENT`;
+const IDPHONE=process.env.IDPHONE || `YOUR IDPHONE OF FACEBOOK HERE FOR JOBS IN LOCAL ENVIRONMENT`;
 
 
 module.exports = {

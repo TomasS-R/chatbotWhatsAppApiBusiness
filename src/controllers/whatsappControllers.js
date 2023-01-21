@@ -33,8 +33,10 @@ const ReceivedMessage = (req, res) => {
             var number = messages["from"];
             
             // Verifico si el numero es correcto, si no le quita el 9
+            // I check if the number is correct, if not remove the 9. (Problem in Argentina phone)
             var num = processMessage.numero(number);
             // Recibe el mensaje del usuario
+            //Receives the user's message
             var text = GetTextUser(messages);
             
             if (text != ""){
