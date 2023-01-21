@@ -1,6 +1,7 @@
-
+.env
+config.js
+logs.txt
 logsModels.txt
 logsService.txt
-logs.txt
 /node_modules
 /.vscode
