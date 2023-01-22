@@ -9,7 +9,6 @@ function MessageText(textResponse, number){
             "body": textResponse
         }
     });
-    myConsole.log(data);
     return data;
 }
 
