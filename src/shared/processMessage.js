@@ -25,6 +25,16 @@ function Process(textUser,number){
         //SALUDAR
         var model = whatsappModel.MessageText("Hola, un gusto saludarte!",number);
         modelsMessages.push(model);
+        
+        var modelist = whatsappModel.MessageList(number);
+        modelsMessages.push(modelist);
+        
+    }
+    else if (textUser.includes("comprar")){
+        //COMPRAR
+        var model = whatsappModel.MessageText("Hola, un gusto saludarte!",number);
+        modelsMessages.push(model);
+        
     }
     else{
         // NO ENTIENDE
