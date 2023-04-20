@@ -1,6 +1,6 @@
 {
   "name": "apiwhatsapp",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.5.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "libphonenumber-js": "^1.10.18"
+    "libphonenumber-js": "^1.10.18",
+    "pg": "^8.9.0"
   },
   "engines": {
     "node": ">=18.0.0"
