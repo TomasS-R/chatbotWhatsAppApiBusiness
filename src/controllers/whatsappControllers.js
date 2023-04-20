@@ -3,6 +3,7 @@ const myConsole = new console.Console(fs.createWriteStream("./logs.txt"));
 const config = require("../config");
 const processMessage = require("../shared/processMessage");
 
+
 const VerifyToken = (req, res) => {
 
     try {
@@ -31,20 +32,53 @@ const ReceivedMessage = (req, res) => {
         if(typeof messageObject != "undefined"){
             var messages = messageObject[0];
             var number = messages["from"];
-            
-            // Verifico si el numero es correcto, si no le quita el 9
+
             // I check if the number is correct, if not remove the 9. (Problem in Argentina phone)
             var num = processMessage.numero(number);
-            // Recibe el mensaje del usuario
+
             //Receives the user's message
             var text = GetTextUser(messages);
+
+            // Obtain the user name
+            var userName = value.contacts[0].profile.name;
+
+            const messageTypes = {
+                image: "image",
+                audio: "audio",
+                video: "video",
+                document: "document",
+                sticker: "sticker",
+                location: "location",
+                contacts: "contact"
+            };
+
+            const messageTypeKeys = Object.keys(messageTypes);
+            // Obtain the type of message received
+            const messageTypeReceived = messageTypeKeys.find(key => messages.hasOwnProperty(key));
             
             if (text != ""){
-                processMessage.Process(text,num);
+                processMessage.Process(text,num,userName);
             }
-
+            else if (messageTypeReceived) {
+                processMessage.ProcessMediaTypesReceived(messageTypes[messageTypeReceived], num);
+            }
+            else if (text == "") {
+                // Orders cart
+                var order = messages["order"];
+                var product_items = order["product_items"];
+                // Obtain product
+                if (Array.isArray(product_items) && product_items.length > 0 && order) {
+                    try {
+                        //const products = processProductItems(product_items, num);
+                        processMessage.ProcessProductCartLang(num, product_items);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    
+                }
+            } 
         }
-
+        
         res.send("EVENT_RECEIVED");
     }catch(e) {
         myConsole.log(e);
@@ -68,15 +102,16 @@ function GetTextUser(messages){
         else if(typeInteractive == "list_reply"){
             text = (interactiveObject["list_reply"])["title"];
         }else{
-            myConsole.log("sin mensaje");
+            console.log("No message");
         }
     }else{
-        myConsole.log("sin mensaje");
+        console.log("No message");
     }
     return text;
 }
 
 module.exports = {
     VerifyToken,
-    ReceivedMessage
+    //proccessProducts,
+    ReceivedMessage,
 }

@@ -7,13 +7,13 @@ function SendMessageWhatsApp(data){
 
     const options = {
         host:"graph.facebook.com",
-        //Cambiar ID de telefono para produccion o desarrollo
+        // Change the ID of the phone for production or development
         path:"/v15.0/"+config.IDPHONE+"/messages",
         method:"POST",
         body:data,
         headers: {
             "Content-Type":"application/json",
-            Authorization: "Bearer "+config.TOKEN
+            Authorization: `Bearer ${config.TOKEN}`
         }
     };
     const req = https.request(options, res => {
