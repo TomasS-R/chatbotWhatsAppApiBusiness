@@ -150,7 +150,7 @@ fly secrets set SUPER_SECRET_KEY=password1234
 
 ### 🚀 **Llevarás tu negocio al siguiente nivel** prestando un servicio 100% profesional y automatizado alojado en la nube gracias a fly.io y podrás conectarte a la base de datos con el servicio Supabase en postgres SQL.
 
-# Getting started
+# Primeros pasos
 - ### [Funciones del bot](#function_of_bot)
 - ### [Comenzar](#get_started)
 - ### [No soportado por la api](#not_support_api)
