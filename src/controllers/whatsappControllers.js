@@ -42,6 +42,9 @@ const ReceivedMessage = (req, res) => {
             // Obtain the user name
             var userName = value.contacts[0].profile.name;
 
+            // Ortain the message id to mark as read
+            var messageid = messages["id"];
+
             const messageTypes = {
                 image: "image",
                 audio: "audio",
@@ -57,7 +60,7 @@ const ReceivedMessage = (req, res) => {
             const messageTypeReceived = messageTypeKeys.find(key => messages.hasOwnProperty(key));
             
             if (text != ""){
-                processMessage.Process(text,num,userName);
+                processMessage.Process(text,num,userName,messageid);
             }
             else if (messageTypeReceived) {
                 processMessage.ProcessMediaTypesReceived(messageTypes[messageTypeReceived], num);

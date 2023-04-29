@@ -1,3 +1,12 @@
+function MarkMessageAsRead(messageId) {
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "status": "read",
+        "message_id": `${messageId}`
+    });
+    return data;
+}
+
 // Select languages
 function messageButtonLanguage(number){
     const data = JSON.stringify({
@@ -429,6 +438,8 @@ function messageStart(number){
 }
 
 module.exports = {
+    MarkMessageAsRead,
+
     messageButtonLanguage,
     messageButtonStart,
     MessageText,

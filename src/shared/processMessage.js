@@ -48,7 +48,7 @@ async function numSavedVerify(number){
     }
 }
 
-async function Process(textUser,number,user) {
+async function Process(textUser,number,user,idmessage) {
     let originaltext = textUser;
     textUser = textUser.toLowerCase();
 
@@ -56,6 +56,10 @@ async function Process(textUser,number,user) {
     let modelsMessages = [];
 
     await numSavedVerify(number);
+
+    // Mark message as read
+    const messageRead = whatsappModelES.MarkMessageAsRead(idmessage);
+    modelsMessages.push(messageRead);
 
     // If recived any message the bot catch any message
     if(textUser.match(/^.*$/)){
