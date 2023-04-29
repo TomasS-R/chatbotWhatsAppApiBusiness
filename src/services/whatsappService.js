@@ -8,7 +8,7 @@ function SendMessageWhatsApp(data){
     const options = {
         host:"graph.facebook.com",
         // Change the ID of the phone for production or development
-        path:"/v15.0/"+config.IDPHONE+"/messages",
+        path:`/v15.0/${config.IDPHONE}/messages`,
         method:"POST",
         body:data,
         headers: {
