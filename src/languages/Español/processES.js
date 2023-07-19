@@ -123,16 +123,7 @@ async function languageSpanish(textUser,number,user) {
         let modelMenuButton = whatsappModel.messageButtonMenu(number);
         modelsMessages.push(model,modelMenuButton);
         
-    }/*
-    else if (textUser.includes("/database")){
-        // Response with info of database
-        const info = await dictionaryModule.databaseInfo();
-
-        console.log(info);
-
-        let modelusers = whatsappModel.MessageText(info,number);
-        modelsMessages.push(modelusers);
-    }*/
+    }
     else if (textUser.match(/^\p{Emoji}+$/u)){
         let answer = dictionaryModule.getRandomEmoji();
         let model = whatsappModel.MessageText(answer,number);

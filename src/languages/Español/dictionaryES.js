@@ -102,25 +102,6 @@ function productCartRecivedSpanish(number,products,name){
     }
 }
 
-async function databaseInfo(){
-    try {
-        const users = await database.getUsers();
-        
-        let databaseInfo = ("Aquí está la información de la base de datos: \n\n");
-
-        users.forEach(user => {
-            let nameP = user.name;
-            let phone = user.phone;
-            console.log(nameP, phone);
-            databaseInfo += "Nombre: " + nameP + " - Teléfono: " + phone + "\n";
-        });
-        return databaseInfo;
-    } catch (e) {
-        console.log(e);
-    }
-    
-}
-
 function roadmapResponseSpanish(){
     const roadmapResponse = "Claro que si, te dejo el link para que lo puedas ver: https://bit.ly/BotRex";
     return roadmapResponse;
@@ -193,7 +174,6 @@ module.exports = {
     welcomeResponseSpanish,
     notResponseResultSpanish,
     productCartRecivedSpanish,
-    databaseInfo,
     roadmapResponseSpanish,
     responseAsesoramentSpanish,
     responseBotForBusinessSpanish,

@@ -1,7 +1,5 @@
-const fs = require("fs");
 const https = require("https");
-const myConsole = new console.Console(fs.createWriteStream("./logsService.txt"));
-const config = require("../config")
+const config = require("../config");
 
 function SendMessageWhatsApp(data){
 
