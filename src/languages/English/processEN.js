@@ -60,13 +60,15 @@ async function languageEnglish(textUser,number,user) {
     }
     else if (textUser.match(/\bproducts\b/)){
         // PRODUCTOS
-        //let model = whatsappModel.messageListProductos(number);
+        let model = whatsappModel.messageListProductos(number);
         //modelsMessages.push(model);
+        /*
         let product1 = whatsappModel.messageListProducto1(number);
         let product2 = whatsappModel.messageListProducto2(number);
         let product3 = whatsappModel.messageListProducto3(number);
+        */
         let modelMenuButton = whatsappModel.messageButtonMenu(number);
-        modelsMessages.push(product1,product2,product3,modelMenuButton);
+        modelsMessages.push(/*product1,product2,product3*/model,modelMenuButton);
     }
     else if (textUser.match(/\baudio\b/)){
         // AUDIO

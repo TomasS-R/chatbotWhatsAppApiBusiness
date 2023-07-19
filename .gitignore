@@ -8,3 +8,4 @@ Dockerfile
 .dockerignore
 fly.toml
 database.js
+tableChats.js

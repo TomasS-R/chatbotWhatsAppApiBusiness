@@ -10,3 +10,5 @@ DATABASEPORT=
 DATABASENAME=
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
+# App name in fly.io if you want to deploy in this platform
+FLY_APP_NAME=
