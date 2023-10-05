@@ -55,16 +55,16 @@ function sendWhatsAppMessage(data) {
 };
 
 
-function sendTextFront(text, num){
+function sendTextFront(body, wa_id){
 
     const data = JSON.stringify({
         "messaging_product": "whatsapp",
         "recipient_type": "individual",
-        "to": num,
+        "to": wa_id,
         "type": "text",
         "text": {
           "preview_url": true,
-          "body": text
+          "body": body
         }
     });
     

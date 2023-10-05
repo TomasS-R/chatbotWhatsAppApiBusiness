@@ -7,5 +7,6 @@ logs.txt
 Dockerfile
 .dockerignore
 fly.toml
+# Data Base files
 database.js
-tableChats.js
+messages.js
