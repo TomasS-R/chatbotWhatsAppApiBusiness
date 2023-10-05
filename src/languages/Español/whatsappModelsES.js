@@ -310,12 +310,12 @@ function contactAssistant(number){
         "to": number,
         "type": "sticker",
         "sticker": {
-            "link": "https://wa.me/1156903459?text=Estoy%20interesado%20en%20sus%20servicios",
+            "link": "https://wa.me/+5491158793549?text=Estoy%20interesado%20en%20sus%20servicios",
         }
     });
     return data;
 }
-/*
+
 function sendContact(number){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",
@@ -348,7 +348,7 @@ function sendContact(number){
                 },
                 "phones": [
                     {
-                        "phone": "1156903459",
+                        "phone": "+5491158793549",
                         "type": "Celular"
                     }
                 ],
@@ -357,7 +357,7 @@ function sendContact(number){
         ]
     });
     return data;
-}*/
+}
 
 function messageButtonGoToMenu(number){
     const data = JSON.stringify({
@@ -452,7 +452,8 @@ module.exports = {
     sendSticker,
     sendLocation,
     contactAssistant,
-    //sendContact,
+    sendContact,
+
     messageButtonGoToMenu,
     messageButtonMenu,
     messageStart,

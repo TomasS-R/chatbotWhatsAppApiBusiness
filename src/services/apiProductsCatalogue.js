@@ -1,17 +1,25 @@
 const https = require("https");
 const config = require("../config");
 
-async function SendMessageWhatsApp(data){
+// You can configure here the get information from the product/products
+// More info: https://developers.facebook.com/docs/marketing-api/reference/product-catalog/products/
+
+// Products
+// https://graph.facebook.com/v15.0/524785366304461/products?fields=image_url
+
+// Product
+// https://graph.facebook.com/v15.0/5971520329580778?fields=image_url
+
+async function ObtainInfoProd(idProductCatalogue, fields, isProduct){
 
     try{
+        const entityType = isProduct ? '' : '/products';
         const options = {
             host:"graph.facebook.com",
             // Change the ID of the phone for production or development
-            path:`/${config.VERSION}/${config.IDPHONE}/messages`,
-            method:"POST",
-            body:data,
+            path:`/${config.VERSION}/${idProductCatalogue}${entityType}?fields=${fields}`,
+            method:"GET",
             headers: {
-                "Content-Type":"application/json",
                 Authorization: `Bearer ${config.TOKEN}`
             }
         };
@@ -33,8 +41,6 @@ async function SendMessageWhatsApp(data){
             req.on("error", error => {
                 console.error(error);
             });
-
-            req.write(data);
             req.end();
         });
     }catch(e){
@@ -43,5 +49,5 @@ async function SendMessageWhatsApp(data){
 }
 
 module.exports = {
-    SendMessageWhatsApp
+    ObtainInfoProd
 };

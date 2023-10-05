@@ -1,16 +1,19 @@
 const config = require("../config");
+const eventManager = require("../eventManager");
+const messagesDB = require("../databaseFiles/messages");
 const processMessage = require("../shared/processMessage");
-const database = require("../databaseFiles/database");
 const messagesSave = require("../databaseFiles/tableChats");
+const queueMessage = require("../bullmqQueue/messageQueue");
 const waFront = require("../libraries/whatsappFrontResponse");
+const receivedChatBotMessage = require("../chatbotManage/recivedChatBotMessage");
+const messageUserFiles = require("../frontEnd/messageTypeRecived");
 
 // Front end api
-
-async function show (wa_id,req, res) {
+async function show(wa_id,req, res) {
     try {
         // The wa_id pass in the file routes.js
-        console.log("Number show: " + wa_id);
-        const allMessages = await database.getMessagesOfNumber(wa_id); // Extract most recent messages from user to database
+        //console.log("Number show: " + wa_id);
+        const allMessages = await messagesDB.getMessagesOfNumber(wa_id); // Extract most recent messages from user to database
         //const result = allMessages.rows;
         res.status(200).json({
             success: true,
@@ -28,7 +31,7 @@ async function show (wa_id,req, res) {
 // Obtain a especific message
 async function getMessage (req, res) {
     try {
-        const messages = await database.getMessage(); // Extract most recent messages from users to database
+        const messages = await messagesDB.getMessage(); // Extract most recent messages from users to database
         //const jsonResult = JSON.stringify(messages);
         res.status(200).json({
             success: true,
@@ -54,10 +57,16 @@ const deleteMessage = (req, res) => {
     res.send('Eliminando un mensaje específico');
 };
 */
+
+let sharedBodyMessageSend = null;
+
 async function sendMessageUser (body, wa_id, res) {
     try {
+        // const username = await messagesDB.GetUsername(wa_id);
         const sendMessage = await waFront.sendTextFront(body,wa_id);
         const response = JSON.parse(sendMessage);
+
+        sharedBodyMessageSend = body;
 
         var wa_idresponse = response['contacts'][0]['wa_id'];
         var messageId = response['messages'][0]['id'];
@@ -71,12 +80,28 @@ async function sendMessageUser (body, wa_id, res) {
         var datenoformat = new Date(timestamp);
         var date = datenoformat.toISOString();
 
-        // save the message in supabase
-        await database.saveMessageSendedUser(wa_idresponse, messageId, type, outgoing, body, status, caption, data, date);
-        
+        var updated_at = datenoformat.toISOString();
+        var bot = false;
+
+        const result = JSON.stringify({
+            "body": body,
+            "caption": caption,
+            "created_at": date,
+            "data": data,
+            "outgoing": outgoing,
+            "status": status,
+            "type": type,
+            "updated_at": updated_at,
+            "wa_id": wa_idresponse,
+            "wam_id": messageId,
+        });
+        const resultjson = JSON.parse(result);
+        // save the message in supabase with queue
+        queueMessage.enqueueSendMessage(wa_idresponse,messageId,type,outgoing,body,status,caption,data,date,bot);
+
         res.status(200).json({
             success: true,
-            data: response,
+            data: resultjson,
         });
         //return sendMessage;
     } catch (e) {
@@ -107,124 +132,150 @@ const VerifyToken = (req, res) => {
     }
 }
 
-async function ReceivedMessage (req, res) {
+async function extractMessageData(req) {
     try {
         var entry = (req.body["entry"])[0];
         var changes = (entry["changes"])[0];
         var value = changes["value"];
         var messageObject = value["messages"];
-        var statuses = value["statuses"];
+        var messages = messageObject?.[0];
+        var statuses = value?.["statuses"];
 
-        if (Array.isArray(messageObject) && messageObject.length > 0) {
-            var messages = messageObject[0];
-            var number = messages["from"]; // This is the same for wa_id
-            var type = messages["type"];
-            var timestamp = messages["timestamp"];
-            //console.log(messages);
-        }
+        var username = value?.contacts?.[0]?.profile?.name;
+        var messagesId = messages?.["id"];
+        var caption = '';
+        var data = '';
+        var outgoing = 'false' // Entry = false / Exit = true
 
+        var messages = messageObject?.[0];
+        var wa_id = messages?.["from"];
+        var type = messages?.["type"];
+        var timestamp = messages?.["timestamp"];
+
+        var bot = false;
+        
         if (Array.isArray(statuses) && statuses.length > 0) {
-            var statusvalue = statuses[0];
-            var status = statusvalue.status; // sent, delivered, read, failed
-            var statusid = statusvalue.id;
-            var statusactual = await database.verifyStatusMessage(statusid);
-            if (statusactual != status)
+            var statusvalue = statuses?.[0];
+
+            var status = statusvalue?.status; // sent, delivered, read, failed, deleted
+            var status_id = statusvalue?.id; // id of the status message
+            var date = statusvalue?.timestamp; // catch the moment of the message change status
+            var recipient = statusvalue?.recipient_id; // wa_id
+
+            var updated_at = new Date(date * 1000);
+            var statusactual = await messagesDB.verifyStatusMessage(status_id);
+            
+            if (statusactual != status && (status == "read" || status == "delivered" || status == "failed"))
             {
-                await database.updateStatusMessage(statusid,status);
-            }
-        }
+                queueMessage.enqueueSaveStatus(status_id,status,updated_at);
 
-        if(typeof messageObject != "undefined"){
-            // Data of the messages
-            var date = new Date(timestamp * 1000);
-            var status = "sent";
-            var caption = '';
-            var data = '';
-            var outgoing = "false"; // Entry = false / Exit = true
-
-            // I check if the number is correct, if not remove the 9. (Problem in Argentina phone)
-            var num = processMessage.numero(number);
-
-            //Receives the user's message
-            var text = GetTextUser(messages);
-
-            // Obtain the user name
-            var userName = value.contacts[0].profile.name;
-
-            // Obtain the message id to mark as read
-            var messageid = messages["id"];
-
-            // Create table in supabase
-            await messagesSave.createTable();
-            // Save the messages and info in supabase
-            /*
-            console.log("Saving message in supabase: "+
-                        "\t Id de chat: "+ number +
-                        "\t Id de mensaje: "+messageid+
-                        "\t Tipo: "+ type +
-                        "\t outgoing: "+ outgoing +
-                        "\t body: "+ text +
-                        "\t status: "+ status +
-                        "\t caption: "+ caption +
-                        "\t data: "+ data +
-                        "\t Fecha: "+ date)
-            */
-            await database.saveMessage(number, messageid, type, outgoing, text, status, caption, data, date);
-            /*
-            if (Array.isArray(statuses) && statuses.length > 0) {
-                var statusvalue = statuses[0];
-                var status = statusvalue.status; // sent, delivered, read, failed
-                var statusid = statusvalue.id;
-                await database.verifyStatusMessage(statusid);
-                //console.log(statusid);
+                const changeStatus = true;
+                eventManager.eventEmmitMessage(sharedBodyMessageSend, status, recipient, status_id, type, updated_at, caption, data, outgoing, changeStatus, bot);
                 
-                /*
-                if (status == "read") {
-                }
-                if (status == "delivered") {
-                }
-                if (status == "sent") {
-                }
-                */
-                //console.log(status);
-            //}
+            }
+            else if (status == "sent"){
+                const changeStatus = false;
+                eventManager.eventEmmitMessage(sharedBodyMessageSend, status, recipient, status_id, type, updated_at, caption, data, outgoing, changeStatus, bot);
+            }
             
-            const messageTypes = {
-                image: "image",
-                audio: "audio",
-                video: "video",
-                document: "document",
-                sticker: "sticker",
-                location: "location",
-                contacts: "contact"
-            };
+        }
+    } catch (e) {
+        console.log(e);
+    }
 
-            const messageTypeKeys = Object.keys(messageTypes);
-            // Obtain the type of message received
-            const messageTypeReceived = messageTypeKeys.find(key => messages.hasOwnProperty(key));
-            
-            if (text != ""){
-                processMessage.Process(text,num,userName,messageid);
-            }
-            else if (messageTypeReceived) {
-                processMessage.ProcessMediaTypesReceived(messageTypes[messageTypeReceived], num);
-            }
-            else if (text == "") {
-                // Orders cart
-                var order = messages["order"];
-                var product_items = order["product_items"];
-                // Obtain product
-                if (Array.isArray(product_items) && product_items.length > 0 && order) {
-                    try {
-                        //const products = processProductItems(product_items, num);
-                        processMessage.ProcessProductCartLang(num, product_items);
-                    } catch (e) {
-                        console.log(e);
+    const messageData = {
+        userName: username, // Obtain the user name
+        caption: caption,
+        data: data,
+        outgoing: outgoing ? outgoing == null : 'false',
+        datamessage: messageObject,
+        number: wa_id,
+        type: type,
+        timestamp : timestamp, // This is the same for created_at
+        messageid: messagesId, // This is the same for wam_id
+        messages: messages, // This is the same for body or text
+        // Status control
+        status: statuses ? statuses == null : 'sent',
+        bot: bot,
+    };
+  
+    return messageData;
+}
+
+async function ReceivedMessage (req, res) {
+    try {
+
+        const messageData = await extractMessageData(req);
+
+        const {
+            userName,
+            caption,
+            data,
+            outgoing,
+            datamessage,
+            number,
+            type,
+            timestamp,
+            messageid,
+            messages,
+            // Status control to check status in front end
+            status,
+            bot,
+        } = messageData;
+
+        if(typeof datamessage != "undefined"){
+            try {
+                // Data of the messages
+                var date = new Date(timestamp * 1000);
+
+                // I check if the number is correct, if not remove the 9. (Problem in Argentina phone)
+                var num = processMessage.numero(number);
+
+                var text = GetTextUser(messages); //Receives the user's message
+                const changeStatus = false;
+                eventManager.eventEmmitMessage(text, status, number, messageid, type, date, caption, data, outgoing, changeStatus, bot); // Emmit message to the front-end
+
+                // Create table in supabase
+                await messagesSave.createTable();
+
+                // Save the messages and info in supabase
+                if (type != "unsupported" && (type == "text" || type == "interactive" || type == "order")) {
+                    if (type == "order") {
+                        // Process the order message to the front end
+                        console.log("Data message: ", datamessage);
+                        await messageUserFiles.customerMakeOrder(datamessage);
+                    } else {
+                        await messagesDB.saveMessage(number, messageid, type, outgoing, text, status, caption, data, date, bot);
                     }
-                    
                 }
+
+                const messageTypes = {
+                    image: "image",
+                    audio: "audio",
+                    video: "video",
+                    document: "document",
+                    sticker: "sticker",
+                    location: "location",
+                    contacts: "contact"
+                };
+        
+                const messageTypeKeys = Object.keys(messageTypes);
+                // Obtain the type of message received
+                var messageTypeReceived = messageTypeKeys.find(key => messages.hasOwnProperty(key));
+
+                if (!messageTypeReceived) {
+                    messageTypeReceived = null;
+                } else {
+                    // Save the multimedia messages from user in supabase to send and show in front end
+                    messageUserFiles.saveMediaFileReceived(messageTypeReceived,messages);
+                }
+
+                // Chatbot response
+                receivedChatBotMessage.manageMessagesReceived(userName, type, messages, text, num, messageTypeReceived);
+            } catch (e) {
+                console.log(e);
             }
-            //await waFront.makeRequest("texto",541156903459);
+
         }
 
         res.send("EVENT_RECEIVED");
@@ -250,10 +301,10 @@ function GetTextUser(messages){
         else if(typeInteractive == "list_reply"){
             text = (interactiveObject["list_reply"])["title"];
         }else{
-            console.log("No message");
+            console.log("No message text/interactive");
         }
     }else{
-        console.log("No message");
+        console.log("No message, Type: ", typeMessage);
     }
     return text;
 }
@@ -269,6 +320,7 @@ module.exports = {
     // Back end
     VerifyToken,
     //proccessProducts,
+    extractMessageData,
     ReceivedMessage,
     
 }

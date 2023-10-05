@@ -1,21 +1,26 @@
-const express = require("express");
 const apiRoute = require("./routes/routes");
-// Cors is a package that allows you to make requests from one server to another to pass info to the front end.
-const cors = require("cors");
+const express = require("express");
+const cors = require("cors"); // Cors is a package that allows you to make requests from one server to another to pass info to the front end.
+const app = express();
+const http = require("http");
+const socket = require("../src/frontEnd/sockets");
+const createtStorage = require("./databaseFiles/bucketStorage");
 
-//const whitelist = ["http://localhost:3000/"/*, ""*/];
+const bucketName = `${process.env.BUCKET_NAME_MESSAGES}`;
+createtStorage.createBucketStorage(bucketName);
 
+const PORT = process.env.PORT || 8080;
 const appname = process.env.FLY_APP_NAME;
 
-const app = express();
-//app.use(cors(/*{origin: whitelist}*/));
-const PORT = process.env.PORT || 8080
-
-const HOST = "0.0.0.0";
-
+app.use(cors(/*{origin: whitelist}*/));
 app.use(express.json());
+const httpServer = http.createServer(app);
+
+// Socket.io configuration
+socket.socket(httpServer);
 
 app.use("/whatsapp", apiRoute);
 
-app.listen(PORT, HOST, () => (console.log(`Server listen in port: ${PORT} and Host in: ${HOST}`)));
-console.log(`Back end in: https://${appname}.fly.dev/whatsapp/messages`);
+httpServer.listen(PORT, () => {console.log('Running on : ', httpServer.address());});
+//app.listen(PORT, HOST, () => (console.log(`Server is ready and listen in: ${HOST}${PORT}`)));
+console.log(`Back end in: https://${appname}.fly.dev/whatsapp/api/messages`);

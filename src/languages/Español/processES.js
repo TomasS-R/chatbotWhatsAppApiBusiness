@@ -1,31 +1,7 @@
 const whatsappModel = require("../Español/whatsappModelsES");
 const dictionaryModule = require("../Español/dictionaryES");
-const whatsappService = require("../../services/whatsappService");
 const databaseAccess = require("../../databaseFiles/database");
-
-/*
-function sendMessagesInOrder(modelsMessages) {
-    let currentIndex = 0;
-  
-    function sendNextMessage() {
-        if (currentIndex < modelsMessages.length) {
-            setTimeout(() => {
-                whatsappService.SendMessageWhatsApp(modelsMessages[currentIndex]);
-                currentIndex++;
-                sendNextMessage();
-            }, 1000);
-        }
-    }
-  
-    sendNextMessage();
-}*/
-
-async function sendMessagesInOrder(modelsMessages) {
-    for (const message of modelsMessages) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        whatsappService.SendMessageWhatsApp(message);
-    }
-}
+const senderMessagesBot = require("../../chatbotManage/senderMessagesBot");
 
 // Spanish
 async function languageSpanish(textUser,number,user) {
@@ -108,10 +84,10 @@ async function languageSpanish(textUser,number,user) {
         // ASESORAMIENTO
         let answer = dictionaryModule.responseAsesoramentSpanish();
         let model = whatsappModel.MessageText(answer,number);
-        //let modelContact = whatsappModel.sendContact(number);
+        let modelContact = whatsappModel.sendContact(number);
 
         let answerContact = dictionaryModule.giveContactLink();
-        let modelContact = whatsappModel.MessageText(answerContact,number);
+        // let modelContact = whatsappModel.MessageText(answerContact,number);
         let modelMenuButton = whatsappModel.messageButtonMenu(number);
         modelsMessages.push(model,modelContact,modelMenuButton);
         
@@ -129,11 +105,18 @@ async function languageSpanish(textUser,number,user) {
         let model = whatsappModel.MessageText(answer,number);
         modelsMessages.push(model);
     }
-    /*else if (textUser.includes("cambiar nombre")){
-        let answer = dictionaryModule.getRandomEmoji();
-        let model = whatsappModel.MessageText(answer,number);
-        modelsMessages.push(model);
-    }*/
+    else if (textUser.match("test")){
+        let modelMenuButton = whatsappModel.test(number);
+        modelsMessages.push(modelMenuButton);
+    }
+    else if (textUser.match("imagen")){
+        let modelMenuButton = whatsappModel.test2(number);
+        modelsMessages.push(modelMenuButton);
+    }
+    else if (textUser.match("video")){
+        let modelMenuButton = whatsappModel.test3(number);
+        modelsMessages.push(modelMenuButton);
+    }
     else {
         // NO ENTIENDE
         let answer = dictionaryModule.notResponseResultSpanish();
@@ -143,7 +126,7 @@ async function languageSpanish(textUser,number,user) {
     }
 
     // Enviar mensajes en orden
-    await sendMessagesInOrder(modelsMessages);
+    senderMessagesBot.sendMessagesInOrder(modelsMessages);
 }
 
 function responseMediatypeSpanish(type, number){
@@ -173,13 +156,13 @@ function responseMediatypeSpanish(type, number){
         let answer = dictionaryModule.locationReceivedResponseSpanish();
         let model = whatsappModel.MessageText(answer,number);
         modelsMessages.push(model);
-    } else if (type == "contact") {
+    } else if (type == "contacts") {
         let answer = dictionaryModule.contactReceivedResponseSpanish();
         let model = whatsappModel.MessageText(answer,number);
         modelsMessages.push(model);
     }
     // Enviar mensajes en orden
-    sendMessagesInOrder(modelsMessages);
+    senderMessagesBot.sendMessagesInOrder(modelsMessages);
 }
 
 async function ProcessProductCartSpanish(number,products){
@@ -192,7 +175,7 @@ async function ProcessProductCartSpanish(number,products){
     let modelGoToMenu = whatsappModel.messageButtonGoToMenu(number);
     modelsMessages.push(model,modelGoToMenu);
 
-    sendMessagesInOrder(modelsMessages);
+    senderMessagesBot.sendMessagesInOrder(modelsMessages);
 
 }
 

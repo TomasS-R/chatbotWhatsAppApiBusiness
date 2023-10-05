@@ -151,13 +151,13 @@ fly secrets set SUPER_SECRET_KEY=password1234
 ### 🚀 **Llevarás tu negocio al siguiente nivel** prestando un servicio 100% profesional y automatizado alojado en la nube gracias a fly.io y podrás conectarte a la base de datos con el servicio Supabase en postgres SQL.
 
 # Primeros pasos
-- ### [Funciones del bot](#function_of_bot)
-- ### [Comenzar](#get_started)
-- ### [No soportado por la api](#not_support_api)
-- ### [Seguridad y entornos de desarrollo](#security_and_Env)
-- ### [Conexión con la api de Meta](#connection_to_meta_api)
+- ### [Funciones del bot](#funciones_del_bot)
+- ### [Comenzar](#comenzar)
+- ### [No soportado por la api](#no_soportado_api)
+- ### [Seguridad y entornos de desarrollo](#seguridad_y_Env)
+- ### [Conexión con la api de Meta](#conexion_con_meta_api)
 
-<a name="function_of_bot"></a>
+<a name="funciones_del_bot"></a>
 
 ## Funciones del bot:
 
@@ -198,7 +198,7 @@ fly secrets set SUPER_SECRET_KEY=password1234
 
 ### 🕞 Mas funciones seran añadidas en el futuro...
 
-<a name="not_support_api"></a>
+<a name="no_soportado_api"></a>
 
 ## No soportado por la api:
 
@@ -206,7 +206,7 @@ fly secrets set SUPER_SECRET_KEY=password1234
 ### ❌ Administrar miembros de grupos
 ### ❌ Envia una encuesta al usuario o grupo
 
-<a name="get_started"></a>
+<a name="comenzar"></a>
 
 # Comenzar
 
@@ -222,7 +222,7 @@ git clone https://github.com/TomasS-R/chatbotWhatsAppApiBusiness.git
 npm install
 ```
 
-<a name="security_and_Env"></a>
+<a name="seguridad_y_Env"></a>
 
 # Seguridad y Entornos de desarrollo:
 
@@ -243,7 +243,7 @@ fly secrets set SUPER_SECRET_KEY=password1234
 #### ℹ️ Puedes ver mas informacion sobre las configuraciones de env de fly.io en su web:
 [![Fly.io](https://img.shields.io/badge/-Fly.io%20Env%20Configuraciones-blueviolet?style=?style=flat)](https://fly.io/docs/rails/the-basics/configuration/#:~:text=in%20multiple%20environments.-,Secret%20Variables,-Environment%20variables%20that)
 
-<a name="connection_to_meta_api"></a>
+<a name="conexion_con_meta_api"></a>
 
 # Configure la conexión con la api de Meta api cloud business 🦾
 
