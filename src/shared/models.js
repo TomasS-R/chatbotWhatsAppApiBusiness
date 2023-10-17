@@ -13,65 +13,65 @@ function Text(textResponse, number){
     return data;
 }
 
-function Image(number){
+function Image(number, linkImage){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
         "to": number,
         "type": "image",
         "image": {
-            //(URL PARA IMAGEN)
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/WhatsApp%20Image%202023-01-05%20at%2022.56.06.jpeg"
+            //(URL FOR IMAGE)
+            "link": linkImage
         }
     });
     return data;
 }
 
-function Audio(number){
+function Audio(number, linkAudio){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
         "to": number,
         "type": "audio",
         "audio": {
-            //(URL PARA AUDIO .MP3/.MPEG)
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/msg297722695-36791.MPEG"
+            //(URL FOR AUDIO .MP3/.MPEG)
+            "link": linkAudio
         }
     });
     return data;
 }
 
-function Video(number){
+function Video(number, linkVideo){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
         "to": number,
         "type": "video",
         "video": {
-            //(URL PARA VIDEO .MP4)
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/video_whatsapp.mp4"
+            //(URL FOR VIDEO .MP4)
+            "link": linkVideo
         }
     });
     return data;
 }
 
-function Document(number){
+function Document(number, linkDocument, filename, caption){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
         "to": number,
         "type": "document",
         "document": {
-            //(URL PARA DOCUMENTO .PDF .TXT ETC...)
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/document_whatsapp.pdf",
-            "filename": "Documento test",
-            "caption": "Descripcion o datos del documento"
+            //(URL FOR DOCUMENT .PDF .TXT ETC...)
+            "link": linkDocument,
+            "filename": filename,
+            "caption": caption
         }
     });
     return data;
 }
 
-function Buttons(number){
+function Buttons(number, bodyText, buttonTittle1, buttonTittle2, buttonTittle3){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
@@ -80,7 +80,7 @@ function Buttons(number){
         "interactive": {
             "type": "button",
             "body": {
-                "text": "Quieres realizar la encuesta sobre este bot?"
+                "text": bodyText
             },
             "action": {
                 "buttons": [
@@ -88,21 +88,21 @@ function Buttons(number){
                         "type": "reply",
                         "reply": {
                             "id": "00001",
-                            "title": "✅ Sí"
+                            "title": buttonTittle1
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "00002",
-                            "title": "❌ No"
+                            "title": buttonTittle2
                         }
                     },
                     {
                         "type": "reply",
                         "reply": {
                             "id": "00003",
-                            "title": "Mas tarde..."
+                            "title": buttonTittle3
                         }
                     }
                 ]
@@ -112,7 +112,7 @@ function Buttons(number){
     return data;
 }
 
-function List(number){
+function List(number, headerText, bodyText, footerText, buttonTittle, titleSection1){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
@@ -122,19 +122,19 @@ function List(number){
             "type": "list",
             "header": {
                 "type": "text",
-                "text": "Productos"
+                "text": headerText
             },
             "body": {
-                "text": "Seleccione en esta lista *1* de los productos que le gustaria recibir"
+                "text": bodyText
             },
             "footer": {
-                "text": "Presione el boton para ver las opciones"
+                "text": footerText
             },
             "action": {
-                "button": "Ver opciones",
+                "button": buttonTittle,
                 "sections": [
                     {
-                        "title": "Vestuario",
+                        "title": titleSection1,
                         "rows": [
                             {
                                 // El ID puede ser numero o texto
