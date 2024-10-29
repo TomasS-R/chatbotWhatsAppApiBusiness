@@ -1,0 +1,35 @@
+# fly.toml file generated for apiwanodejs on 2023-06-29T13:52:41-03:00
+
+app = 'apiwanodejs'
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+processes = []
+
+[[services]]
+  internal_port = 8080
+  processes = ["app"]
+  protocol = "tcp"
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [http_service]
+    auto_stop_machines = 'stop'
+    auto_start_machines = true
+    min_machines_running = 1
+
+  [[vm]]
+    memory = '256mb'
+    cpu_kind = 'shared'
+    cpus = 1

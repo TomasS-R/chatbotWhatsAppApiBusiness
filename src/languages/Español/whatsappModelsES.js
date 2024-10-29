@@ -1,3 +1,5 @@
+const whatsappModels = require("../../shared/models");
+
 function MarkMessageAsRead(messageId) {
     const data = JSON.stringify({
         "messaging_product": "whatsapp",
@@ -9,311 +11,145 @@ function MarkMessageAsRead(messageId) {
 
 // Select languages
 function messageButtonLanguage(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {
-                "text": "Por favor seleccione el lenguaje de su preferencia:\n\nPlease select your lenguage of your preference:\n\n ▪️Español 🇪🇸\n\n ▪️English 🇬🇧"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "es",
-                            "title": "Español"
-                        }
-                    },
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "en",
-                            "title": "English"
-                        }
-                    },
-                ]
-            }
-        }
-    });
-    return data;
+
+    const buttontext = "Por favor seleccione el lenguaje de su preferencia:\n\nPlease select your lenguage of your preference:\n\n ▪️Español 🇪🇸\n\n ▪️English 🇬🇧";
+    const buttonTitles = ['Español', 'English'];
+    const info = whatsappModels.Buttons(number, buttontext, buttonTitles);
+    return info;
 }
 
 // Mensage Comenzar!
 function messageButtonStart(number,nameUser,lastname){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "header": {
-                "type": "image",
-                "image": {
-                    "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexLogoByXpower.png"
-                }
-            },
-            "body": {
-                "text": "🧐 Oh! que elegancia tener aqui a "+nameUser+" "+lastname+"\n\n🤵🏻‍♂️ Menos mal vine vestido de gala para la ocasión!.\n\nAhora si "+nameUser+"!\n\nMe presento, mi nombre es BotRex 🤖.\n\nSoy el encargado de llevar los negocios al siguiente nivel.\n\nAhora sí, que tal si comenzamos?"
-            },
-            "footer": {
-                "text": "Selecciona una opcion 👇🏻"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "hello-botrex",
-                            "title": "Comenzar! ✅"
-                        }
-                    },
-                ]
-            }
-        }
-    });
-    return data;
-}
 
-// Mensaje recibido
-function MessageText(textResponse, number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",    
-        "recipient_type": "individual",
-        "to": number,
-        "type": "text",
-        "text": {
-            "preview_url": true,
-            "body": textResponse
-        }
-    });
-    return data;
+    const linkImage = "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexLogoByXpower.png";
+    const bodyText = "🧐 Oh! que elegancia tener aqui a "+nameUser+" "+lastname+"\n\n🤵🏻‍♂️ Menos mal vine vestido de gala para la ocasión!.\n\nAhora si "+nameUser+"!\n\nMe presento, mi nombre es BotRex 🤖.\n\nSoy el encargado de llevar los negocios al siguiente nivel.\n\nSin nada mas que añadir, que tal si comenzamos?";
+    const footerText = "Selecciona una opcion 👇🏻";
+    const buttonTitles = ["Comenzar! ✅"];
+    const info = whatsappModels.ImageButton(number, linkImage, bodyText, footerText, buttonTitles);
+    return info;
 }
 
 // Menu Español
-function MessageListMenu(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",    
-        "recipient_type": "individual",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "list",
-            "header": {
-                "type": "text",
-                "text": "Menú 📋"
-            },
-            "body": {
-                "text": "Estas son algunas de las alternativas en nuestro Menú:"
-            },
-            "footer": {
-                "text": "Seleccione una de las opciones 👇🏻"
-            },
-            "action": {
-                "button": "Ver opciones +",
-                "sections": [
-                    {
-                        "title": "Menú 📋",
-                        "rows": [
-                            {
-                                // El ID puede ser numero o texto
-                                "id": "view-products",
-                                "title": "Productos"
-                            },
-                            {
-                                "id": "Listen-audio",
-                                "title": "Escuchar audio"
-                            },
-                            {
-                                "id": "Send-sticker",
-                                "title": "Recibir sticker"
-                            },
-                            {
-                                "id": "Send-location",
-                                "title": "Recibir Ubicacion"
-                            },
-                            {
-                                "id": "Send-contact",
-                                "title": "Recibir asesoramiento"
-                            },
-                            {
-                                "id": "Send-roadmap",
-                                "title": "Ver roadmap"
-                            },
-                            {
-                                "id": "Bot-my-business",
-                                "title": "Bot para mi negocio"
-                            }
-                        ]
-                    },
-                ]
-            }
+function messageListMenu(number){
+
+    const headerText = "Menú 📋";
+    const bodyText = "Estas son algunas de las alternativas en nuestro Menú:";
+    const footerText = "Seleccione una de las opciones 👇🏻";
+    const buttonTittle = "Ver opciones +";
+    const sections = [
+        {
+            title: "Menú 📋",
+            rows: [
+                { id: "0001", title: "Productos" },
+                { id: "0002", title: "Escuchar audio" },
+                { id: "0003", title: "Recibir sticker" },
+                { id: "0004", title: "Recibir Ubicacion" },
+                { id: "0005", title: "Recibir asesoramiento" },
+                { id: "0006", title: "Ver roadmap" },
+                { id: "0007", title: "Bot para mi negocio" },
+            ]
+        },
+        /*
+        {
+            title: "Ejemplo",
+            rows: [
+                { id: "0001", title: "Titulo 1", description: "Descripcion 1" },
+                { id: "0002", title: "Titulo 2", description: "Descripcion 2" }
+            ]
         }
-    });
-    return data;
+        */
+    ];
+    
+    const info = whatsappModels.List(number, headerText, bodyText, footerText, buttonTittle, sections);
+    return info;
 }
 
-// Mensage productos!
+// Mensaje productos!
 function messageListProductos(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to" : number,
-        "type": "interactive",
-        "interactive": {
-            "type": "product_list",
-            "header":{
-                "type": "text",
-                "text": "Catalogo de servicios"
-            },
-            "body":{
-                "text": "Nuestro catalogo de servicios para tu negocio 🤩"
-            },
-            "footer":{
-                "text": "Haz click en ver artículos para ver obtener mas info. 👇🏻"
-            },
-            "action": {
-                "catalog_id": "524785366304461",
-                "sections": [
-                    {
-                        "title": "Nuestros servicios",
-                        "product_items": [
-                            {"product_retailer_id": "796294fer89"},
-                            {"product_retailer_id": "qzl4vcw72p"},
-                            {"product_retailer_id": "4899756ef99"}
-                        ]
-                    }
-                ]
-            }
+    // Ejemplo de uso:
+    const headerText = 'Catálogo de servicios';
+    const bodyText = 'Nuestro catálogo de servicios para tu negocio 🤩';
+    const footerText = 'Haz click en ver artículos para ver obtener más info. 👇🏻';
+    const catalogId = '524785366304461';
+    const sections = [
+        {
+            title: 'Nuestros servicios',
+            productRetailerIds: ['796294fer89', 'qzl4vcw72p', '4899756ef99']
+        },
+        /*
+        {
+            title: 'Nuestros servicios2',
+            productRetailerIds: ['895294fer89', 'awl465772p', '3299866ef99']
         }
-    });
-    return data;
+        */
+    ];
+
+    const catalogMessage = whatsappModels.ListMultipleProducts(number, headerText, bodyText, footerText, catalogId, sections);
+    return catalogMessage;
 }
 
-// Mensage productos!
+// Mensaje productos!
 function messageListProducto1(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "product",
-            "body": {
-                "text": "Bot Premium"
-            },
-            "footer": {
-                "text": "Pulsa ver para obtener mas informacion 👇🏻"
-            },
-            "action": {
-                "catalog_id": "524785366304461",
-                "product_retailer_id": "796294fer89"
-            }
-        }
-    });
-    return data;
+
+    const headerText = "Bot Premium";
+    const footerText = "Pulsa ver para obtener mas informacion 👇🏻";
+    const catalogId = "524785366304461";
+    const productRetailerId = "796294fer89";
+
+    const info = whatsappModels.ListProduct(number, headerText, footerText, catalogId, productRetailerId);
+    return info;
 }
 
 function messageListProducto2(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "product",
-            "body": {
-                "text": "Bot Expert"
-            },
-            "footer": {
-                "text": "Pulsa ver para obtener mas informacion 👇🏻"
-            },
-            "action": {
-                "catalog_id": "524785366304461",
-                "product_retailer_id": "qzl4vcw72p"
-            }
-        }
-    });
-    return data;
+    const headerText = "Bot Expert";
+    const footerText = "Pulsa ver para obtener mas informacion 👇🏻";
+    const catalogId =  "524785366304461";
+    const productRetailerId = "qzl4vcw72p";
+
+    const info = whatsappModels.ListProduct(number, headerText, footerText, catalogId, productRetailerId);
+    return info;
 }
 
 function messageListProducto3(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "product",
-            "body": {
-                "text": "Bot Elite"
-            },
-            "footer": {
-                "text": "Pulsa ver para obtener mas informacion 👇🏻"
-            },
-            "action": {
-                "catalog_id": "524785366304461",
-                "product_retailer_id": "4899756ef99"
-            }
-        }
-    });
-    return data;
+    const headerText = "Bot Elite";
+    const footerText = "Pulsa ver para obtener mas informacion 👇🏻";
+    const catalogId = "524785366304461";
+    const productRetailerId = "4899756ef99";
+
+    const info = whatsappModels.ListProduct(number, headerText, footerText, catalogId, productRetailerId);
+    return info;
 }
 
 // Send audio
 function sendAudio(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "audio",
-        "audio": {
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexAudio.ogg"
-        }
-    });
-    return data;  
+    const linkAudio = "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexAudio.ogg";
+    const info = whatsappModels.Audio(number, linkAudio);
+    return info;
 }
 
 // Send sticker
 function sendSticker(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "sticker",
-        "sticker": {
-            "link": "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexFace.webp",
-        }
-    });
-    return data;
+    const linkSticker = "https://aatxtgegahulgbfagubh.supabase.co/storage/v1/object/public/archivos-para-bot/BotRexFace.webp";
+    const info = whatsappModels.Stickers(number, linkSticker);
+    return info;
 }
 
 // Send location
 function sendLocation(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "location",
-        "location": {
-            "latitude": "-34.63543432250713",
-            "longitude": "-58.36476703246046",
-            "name": "Estadio Alberto J. Armando",
-            "address": "Brandsen 805, C1161 CABA"
-        }
-    });
-    return data;
+    const latitude = "-34.63543432250713";
+    const longitude = "-58.36476703246046";
+    const nameloc = "Estadio Alberto J. Armando";
+    const addressloc = "Brandsen 805, C1161 CABA";
+    const info = whatsappModels.Location(number, latitude, longitude, nameloc, addressloc);
+    return info;
 }
 
 // Send contact
 function contactAssistant(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "sticker",
-        "sticker": {
-            "link": "https://wa.me/+5491158793549?text=Estoy%20interesado%20en%20sus%20servicios",
-        }
-    });
-    return data;
+    const buttonName = "Contactar al desarrollador";
+    const url = "https://wa.me/+5491158793549?text=Estoy%20interesado%20en%20sus%20servicios";
+    const info = whatsappModels.LinkButton(number, headerText, bodyText, footerText, buttonName, url);
+    return info;
 }
 
 function sendContact(number){
@@ -360,81 +196,36 @@ function sendContact(number){
 }
 
 function messageButtonGoToMenu(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {
-                "text": "Deseas ver otras opciones?.\n\nPulsa el boton para ver el menu o escribe *Menú* 👇🏻"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "menu_GoToResponse",
-                            "title": "Menú"
-                        }
-                    },
-                ]
-            }
-        }
-    });
-    return data;
+    
+    const buttontext = "Deseas ver otras opciones?.\n\nPulsa el boton para ver el menu o escribe *Menú* 👇🏻";
+    const buttonTitles = ['Menú'];
+    const info = whatsappModels.Buttons(number, buttontext, buttonTitles);
+    return info;
 }
 
 function messageButtonMenu(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {
-                "text": "Pulsa el boton para ver el menu y sus opciones, o envia la palabra *Menu* 👇🏻"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "menu_button",
-                            "title": "Menú"
-                        }
-                    },
-                ]
-            }
-        }
-    });
-    return data;
+    const buttontext = "Pulsa el boton para ver el menu y sus opciones, o envia la palabra *Menu* 👇🏻";
+    const buttonTitles = ['Menú'];
+    const info = whatsappModels.Buttons(number, buttontext, buttonTitles);
+    return info;
 }
 
 function messageStart(number){
-    const data = JSON.stringify({
-        "messaging_product": "whatsapp",
-        "to": number,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {
-                "text": "Extraordinario! comencemos, mis funciones son variadas aqui puedes ver un listado:\n\n✅ Enviar Stickers\n\n✅ Enviar archivos multimedia\n\n✅ Enviar textos\n\n✅ Enviar localizaciones\n\nMuchas mas opciones...\n\nTambien puedo responder a muchisimos mensajes.\n\nPuedes probar algunas funciones aqui abajo 👇🏻"
-            },
-            "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "menu_button",
-                            "title": "Menu"
-                        }
-                    },
-                ]
-            }
-        }
-    });
-    return data;
+    const buttontext = "Extraordinario! comencemos, mis funciones son variadas aqui puedes ver un listado:\n\n✅ Enviar Stickers\n\n✅ Enviar archivos multimedia\n\n✅ Enviar textos\n\n✅ Enviar localizaciones\n\nMuchas mas opciones...\n\nTambien puedo responder a muchisimos mensajes.\n\nPuedes probar algunas funciones aqui abajo 👇🏻";
+    const buttonTitles = ['Menú'];
+    const info = whatsappModels.Buttons(number, buttontext, buttonTitles);
+    return info;
+}
+
+function giveContactLink(number){
+    const headerText = "Contacto";
+    const bodyText = "Un asesor te respondera por esta vía a la brevedad.";
+    const footerText = "test";
+    const buttonName = "Enviar mensaje";
+    const url = "https://wa.me/1156903459?text=I'm%20interested%20in%20your%20services";
+
+    const info = whatsappModels.LinkButton(number, headerText, bodyText, footerText, buttonName, url);
+    return info;
 }
 
 module.exports = {
@@ -442,8 +233,7 @@ module.exports = {
 
     messageButtonLanguage,
     messageButtonStart,
-    MessageText,
-    MessageListMenu,
+    messageListMenu,
     messageListProductos,
     messageListProducto1,
     messageListProducto2,
@@ -457,4 +247,6 @@ module.exports = {
     messageButtonGoToMenu,
     messageButtonMenu,
     messageStart,
+
+    giveContactLink,
 };

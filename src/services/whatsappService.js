@@ -9,7 +9,6 @@ async function SendMessageWhatsApp(data){
             // Change the ID of the phone for production or development
             path:`/${config.VERSION}/${config.IDPHONE}/messages`,
             method:"POST",
-            body:data,
             headers: {
                 "Content-Type":"application/json",
                 Authorization: `Bearer ${config.TOKEN}`

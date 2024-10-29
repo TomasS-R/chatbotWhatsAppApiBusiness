@@ -1,0 +1,173 @@
+# English 
+
+### --- Version 2.6 ---
+
+Documentation:
+- Documentation available in English and Spanish!!! (the same can be found in the readme file).
+Created files:
+- redisManager handles the status of redis, if you want to use redis in the project you put true in the configuration, otherwise false.
+- databaseManager manages the status of the postgres and supabase database, if you do not need to use a database you can deactivate it without deleting the preset options such as storage or message table creation, by default it is set to True.
+- license file containing the project license.
+- Dockerfile available to upload the file to any server that supports docker.
+- fly.toml file for configuration and upload to fly.io.
+- personalTable created so that the project does not break by default when deploying, this file is the one you should change if you want to save information about the users, or if you have to make “checkpoints” (you can change the columns but keep in mind that this will require you to reformulate the chatbot in the processMessage and database files as this has repercussions on them).
+
+Updated files:
+- Updated the api version to V 21.0.
+- Updated the number function of the processMessage file now detects mexican numbers and corrects them (improved detection).
+- Updated bucketStorage and tableChats files.
+- Optimized connection pool related files like database and messages.
+- Updated files interacting with databaseFiles folder.
+- MessageQueue queues were redone for better optimization and now there is a true/false option in case you don't need to use queues in the project.
+- Workers were modified for better performance in redis, now it works if enabled in the configuration (default: false).
+- The calls in the files of these same ones that called the queues (saveMessagesOrder, senderMessagesBot, whatsappControllers) were modified.
+- Simplified the models (shared > models), the creation of the same and the use of these for better performance and usability, it will no longer be necessary to create the json each time you need to use a model.
+- The model of request of location to the user by means of json has been added.
+- Added the button model with link attached to the models and the interaction with the front end.
+
+### --- Version 2.5 ---
+
+17 October 2023
+Created files:
+- database added to repo in git, this file can catch and consult the information of the user with queries, you can adapt this files of your necesaries
+- messages added to repo in git, the file save all the messages of chats, update the info and get info of chats
+
+### --- Version 2.4 ---
+
+05 October 2023
+Added new libraries:
+- Bull and Bullmq
+- Ioredis
+- Socket.io
+
+Created files:
+- eventManager with clases to send to front-end messages.
+- saveMessagesOrder save the messages in queue and send to front-end.
+- messageQueue to connect redis database and use queues.
+- workers this file work with queues files (work with messageQueue).
+- receivedChatBot file contains a function manageMessagesReceived, no more manage in whatsappControllers.
+- senderMessagesBot can manage the data of bot messages sender to the users to send front-end.
+- bucketStorage create bucket storage and policy file dynamicly in supabase.
+- tableChats added to repo in git! this file create table chat and policy for messages and saved in supabase.
+- messageTypeRecived file to process the file received from the user and save in the storage.
+- mimeType convert the file received from user to download and save file (work with messageTypeRecived).
+- socket file to send messages and states to front-end.
+- apiProductsCatalogue access to the files in meta servers to load the products.
+
+Updated files:
+- Readme file in spanish version fixed.
+- config file added configuration with Redis and Supabase.
+- ExampleEnv file (configure version of meta api - Name of bucket storage - Connection to redis configuration).
+- optimized index.js file.
+- whatsappControllers optimized the file, can check if the user see or not the message (double check read).
+- processEs optimized file and update function sendMessagesInOrder.
+- routes file update performance read and more validations and responses to the requests/responses.
+- whatsappService optimized and can see the response now!.
+
+### --- Version 2.3 ---
+
+19 July 2023
+- Added the power api this can connect the back-end with the front-end with get and post requests, if you have a front-end is very simple now to connect.
+- New functions in database you can configure
+- New field in env file
+- The file whatsappFrontResponse which is in the libraries folder connect to the user to send a message to the client in the front-end
+- New´s functions in whatsappControllers to send the data to the front-end.
+
+### --- Version 2.2 ---
+
+3 May 2023
+- Added EsLint and Prettier
+
+### --- Version 2.1 ---
+
+29 april 2023
+- Seen in messages
+
+
+
+
+# Spanish
+
+### --- Versión 2.6 ---
+
+Documentacion:
+- Documentacion disponible en ingles y español!!! (la misma se puede encontrar en el archivo readme).
+
+Archivos creados:
+- redisManager maneja el estado de redis, si se quiere utilizar redis en el proyecto se coloca true en la configuracion, caso contrario false.
+- databaseManager maneja el estado de la base de datos postgres y supabase, si no se requiere usar una base de datos se puede desactivar sin borrar las opciones prestablecidas como el storage o la creacion de tabla de mensajes, por default se encuentra en True.
+- licence archivo que contiene la licencia del proyecto.
+- Dockerfile disponible para subir el archivo a cualquier servidor que soporte docker.
+- fly.toml archivo para la configuracion y subida a fly.io.
+- personalTable creado para que el proyecto no se rompa por commpleto al realizar deploy, este archivo es el que debes cambiar si quieres guardar informacion sobre los usuarios, o si tienes que hacer "checkpoints" (puedes cambiar las columnas pero ten en cuenta que esto requerira que reformules el chatbot en los archivo processMessage y database ya que esto repercute en ellos).
+
+Archivos actualizados:
+- Se actualizo la version de la api a la V 21.0.
+- Se actualizo la funcion numero del archivo processMessage ahora detecta numeros de mexico y los corrije (se mejoro la deteccion)
+- Se actualizaron los archivos bucketStorage y tableChats.
+- Se optimizaron los archivos relacionados a pool de conexiones como database y messages.
+- Se actualizaron los archivos que interactuaban con la carpeta databaseFiles.
+- MessageQueue las colas fueron re hechas nuevamente para una mejor optimizacion y ahora hay una opcion true/false por si no se requieren usar colas en el proyecto.
+- Workers fueron modificados para mejor rendimiento en redis, ahora funciona si esta activado en la configuracion (default: false).
+- Se modificaron las llamadas en los archivos de estos mismos que llamaban a las colas(saveMessagesOrder, senderMessagesBot, whatsappControllers).
+- Se simplificaron los modelos (shared > models), la creacion de los mismos y la utilizacion de estos para mejor rendimiento y usabilidad, ya no sera necesario crear el json cada vez que requiera usar un modelo.
+- Se agrego el modelo de solicitud de ubicacion al usuario mediante json.
+- Se agrego el modelo de boton con link adjunto a los modelos y a la interaccion con el front end.
+
+### --- Version 2.5 ---
+
+17 de Octubre de 2023
+Archivos creados:
+- Se agregó la base de datos al repositorio en git, este archivo puede capturar y consultar la información del usuario con consultas, puedes adaptar estos archivos según tus necesidades.
+- Se agregaron los mensajes al repositorio en git, el archivo guarda todos los mensajes de los chats, actualiza la información y obtiene información de los chats.
+
+### --- Version 2.4 ---
+
+Versión 2.4 - 05 de Octubre de 2023
+Librerías agregadas:
+- Bull y Bullmq
+- Ioredis
+- Socket.io
+
+Archivos creados:
+- eventManager con clases para enviar mensajes al front-end.
+- saveMessagesOrder guarda los mensajes en cola y los envía al front-end.
+- messageQueue para conectar la base de datos de Redis y usar colas.
+- workers este archivo trabaja con los archivos de colas (trabaja con messageQueue).
+- receivedChatBot el archivo contiene una función manageMessagesReceived, ya no se maneja en whatsappControllers.
+- senderMessagesBot puede manejar los datos de los mensajes del bot enviados a los usuarios para enviar al front-end.
+- bucketStorage crea el almacenamiento de buckets y el archivo de política dinámicamente en supabase.
+- tableChats agregado al repositorio en git! este archivo crea la tabla de chat y la política para los mensajes y se guarda en supabase.
+- messageTypeRecived archivo para procesar el archivo recibido del usuario y guardarlo en el almacenamiento.
+- mimeType convierte el archivo recibido del usuario para descargarlo y guardarlo (trabaja con messageTypeRecived).
+- socket archivo para enviar mensajes y estados al front-end.
+- apiProductsCatalogue acceso a los archivos en los servidores de meta para cargar los productos.
+
+Archivos actualizados:
+- Archivo Readme en versión en español corregido.
+- Archivo de configuración agregado con Redis y Supabase.
+- Archivo ExampleEnv (configura la versión de la API de meta - Nombre del almacenamiento de buckets - Configuración de conexión a Redis).
+- index.js optimizado.
+- whatsappControllers optimizado, puede verificar si el usuario ve o no el mensaje (doble verificación de lectura).
+- processEs archivo optimizado y función de actualización sendMessagesInOrder.
+- routes archivo actualizado con mejor rendimiento de lectura y más validaciones y respuestas a las solicitudes/respuetas.
+- whatsappService optimizado y ahora se puede ver la respuesta.
+
+### --- Version 2.3 ---
+
+Versión 2.3 - 19 de Julio de 2023
+- Se agregó la API de power que puede conectar el back-end con el front-end con solicitudes GET y POST, si tienes un front-end ahora es muy simple conectarse.
+- Nuevas funciones en la base de datos que puedes configurar.
+- Nuevo campo en el archivo env.
+- El archivo whatsappFrontResponse que está en la carpeta de librerías se conecta al usuario para enviar un mensaje al cliente en el front-end.
+- Nuevas funciones en whatsappControllers para enviar los datos al front-end.
+
+### --- Version 2.2 ---
+
+Versión 2.2 - 3 de Mayo de 2023
+- Se agregó EsLint y Prettier.
+
+### --- Version 2.1 ---
+
+Versión 2.1 - 29 de abril de 2023
+- Visto en los mensajes.

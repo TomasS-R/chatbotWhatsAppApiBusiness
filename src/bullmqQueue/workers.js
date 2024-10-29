@@ -2,95 +2,96 @@ const messagesDB = require('../databaseFiles/messages');
 const whatsappService = require('../services/whatsappService');
 const { Worker } = require('bullmq');
 const config = require('../config');
+const redisManager = require('./redisManager');
+const databaseManager = require('../databaseFiles/databaseManager');
 
 // Connection with queue
-const redisconnection = config.redisConnection;
+if (redisManager.isConnected()) {
+  const redisconnection = config.redisConnection;
 
-redisconnection.on('error', (err) => {
-  console.error('Error with the conection to Redis in the workerDB:', err);
-});
-
-redisconnection.set('foo', 'bar')
-  .then(() => {
-    console.log('WorkerDB ON');
-  })
-  .catch((err) => {
-    console.error('Error in the WorkerDB:', err);
+  redisconnection.on('error', (err) => {
+    console.error('Error with the conection to Redis in the workerDB:', err);
   });
 
-// Worker to save the message in the DB
-const workerMSDB = new Worker('queueDBMessageSend', async (job) => {
-  try {
-    if (job.name == 'DBMessageSend') {
-        const { wa_idresponse, messageId, type, outgoing, body, status, caption, data, date, bot } = job.data;
+  // Global worker
+  const worker = new Worker('unifiedQueue', async (job) => {
+    switch (job.name) {
+      case 'DBMessageSend':
+        try {
+          const { wa_idresponse, messageId, type, outgoing, body, status, caption, data, date, bot } = job.data;
 
-        // Save the message in the database
-        await messagesDB.saveMessageSendedUser(wa_idresponse, messageId, type, outgoing, body, status, caption, data, date, bot);
-    }
+          console.log('wa_idresponse: ', wa_idresponse, 'messageId: ', messageId, 'type: ', type, 'outgoing: ', outgoing, 'body: ', body, 'status: ', status, 'caption: ', caption, 'data: ', data, 'date: ', date, 'bot: ', bot);
 
-    //console.log('Job done succesfull! ', job.id);
-  } catch (e) {
-    console.log('Error in the worker: ', e);
-    throw e;
-  }
-},{
-    connection: redisconnection,
-});
+          // Save the message in the database
+          if (databaseManager.isConnected()) {
+            await messagesDB.saveMessageSendedUser(wa_idresponse, messageId, type, outgoing, body, status, caption, data, date, bot);
+          }
 
-
-// Worker to save the status of the message
-const workerMStatus = new Worker('queueDBMessageStatus', async (job) => {
-    try {
-      if (job.name == 'DBMessageStatus') {
+          //console.log('Job done succesfull! ', job.id);
+        } catch (e) {
+          console.log('Error in the worker: ', e);
+          throw e;
+        }
+        break;
+      case 'DBMessageStatus':
+        try {
           const { statusid,status,updated_at } = job.data;
-          //console.log('Status: ', statusid,status,updated_at);
-  
+
+          console.log('statusid: ', statusid, 'status: ', status, 'updated_at: ', updated_at);
+
           // Save the status of the message in the database
-          const response = await messagesDB.updateStatusMessage(statusid,status,updated_at);
-          //console.log('Response: ', response);
-      }
-    
-      //console.log('Job done succesfull! ', job.id);
-    } catch (e) {
-      console.log('Error in the worker: ', e);
-      throw e;
-    }
-  },{
-      connection: redisconnection,
-});
+          if (databaseManager.isConnected()) {
+            const response = await messagesDB.updateStatusMessage(statusid,status,updated_at);
+          }
 
-// Worker to send message of the chatbot to the user
-const workerSendMessageChatBot = new Worker('queueSendMessageChatBot', async (job) => {
-  try {
-    if (job.name == 'sendMessageBot') {
+        } catch (e) {
+          console.log('Error in the worker: ', e);
+          throw e;
+        }
+        break;
+      case 'sendMessageBot':
+        try {
+            const { message } = job.data;
+
+            console.log('message: ', message);
+            
+            if (databaseManager.isConnected()) {
+              const result = await whatsappService.SendMessageWhatsApp(message);
+            }
+            
+            if (result == 'error') {
+              console.log('Error in the workerSendMessageChatBot: ', result, 'Message: ', message);
+              throw result;
+            }
+            else
+            {
+              console.log('Message sended!');
+            }
       
-      const { message } = job.data;
-
-      const result = await whatsappService.SendMessageWhatsApp(message);
-
-      return result;
-
+            return result;
+        
+          //console.log('Job done succesfull! ', job.id);
+        } catch (e) {
+          console.log('Error in the worker: ', e);
+          throw e;
+        }
     }
-  
-    //console.log('Job done succesfull! ', job.id);
-  } catch (e) {
-    console.log('Error in the worker: ', e);
-    throw e;
+  },
+  {
+      connection: redisconnection,
+  });
+
+  worker.on('failed', (job, err) => console.log(`Job failed send message chatbot worker: ${job.id} ${job.name}, error: ${err}`));
+
+  module.exports = {
+    worker,
   }
-},{
-    connection: redisconnection,
-});
+} else {
+  console.error('Redis is not connected. Worker cannot be initialized.');
 
-// workerMSDB.on('completed', job => console.log(`Job completed: ${job.id}`));
-workerMSDB.on('failed', (job, err) => console.log(`Job failed: ${job.id}, error: ${err}`));
-
-// workerMStatus.on('completed', job => console.log(`Job completed: ${job.id}`));
-workerMStatus.on('failed', (job, err) => console.log(`Job failed : ${job.id}, error: ${err}`));
-
-// workerSendMessageChatBot.on('completed', job => console.log(`Job completed: ${job.id}`));
-workerSendMessageChatBot.on('failed', (job, err) => console.log(`Job failed send message chatbot worker: ${job.id}, error: ${err}`));
-
-
-module.exports = {
-  workerSendMessageChatBot,
+  module.exports = {
+      worker: {
+          on: () => console.error('Worker dummy called without Redis connection.')
+      },
+  };
 }

@@ -1,6 +1,3 @@
-const database = require("../../databaseFiles/database");
-const whatsappcontroller = require("../../controllers/whatsappControllers");
-
 // Español
 function españolResponseSpanish(name){
     const responseLanguage = "✅ Excelente "+name+"! a partir de ahora me comunicare contigo en Español 🇪🇸.\n\nAntes de comenzar a conversar me gustaria saber mas de ti para poder brindarte un servicio excepcional 😎.\n\nComencemos con ¿Como es tu nombre? o ¿Como te gustaria que te llame?\n\n_*Solo coloca el nombre*_";
@@ -113,7 +110,7 @@ function responseAsesoramentSpanish(){
 }
 
 function responseBotForBusinessSpanish(){
-    const roadmapResponse = "Estamos trabajando en esta opcion para que 🎉_*proximamente*_🎉 puedas tener un bot personalizado en tu negocio. 🏪";
+    const roadmapResponse = "Estamos trabajando en esta opcion para que 🎉*proximamente*🎉 puedas tener un bot personalizado en tu negocio. 🏪";
     return roadmapResponse;
 }
 
@@ -122,11 +119,6 @@ function getRandomEmoji() {
     const randomIndex = Math.floor(Math.random() * emojis.length);
     const randomEmojiResponse = emojis[randomIndex];
     return randomEmojiResponse;
-}
-
-function giveContactLink(){
-    const contactLink = "https://wa.me/1156903459?text=I'm%20interested%20in%20your%20services";
-    return contactLink;
 }
 
 // Send response to recived message media
@@ -166,7 +158,7 @@ function contactReceivedResponseSpanish(){
 }
 
 module.exports = {
-    // Response of data of the user
+    // Responde a la informacion del usuario
     españolResponseSpanish,
     españolResponseNameSpanish,
 
@@ -178,9 +170,8 @@ module.exports = {
     responseAsesoramentSpanish,
     responseBotForBusinessSpanish,
     getRandomEmoji,
-    giveContactLink,
 
-    // Multimedia analisis recividos
+    // Multimedia analisis recibidos
     audioReceivedResponseSpanish,
     imageReceivedResponseSpanish,
     videoReceivedResponseSpanish,

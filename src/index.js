@@ -5,9 +5,21 @@ const app = express();
 const http = require("http");
 const socket = require("../src/frontEnd/sockets");
 const createtStorage = require("./databaseFiles/bucketStorage");
+const databaseManager = require("./databaseFiles/databaseManager")
+const personalTable = require("./databaseFiles/personalTable");
 
-const bucketName = `${process.env.BUCKET_NAME_MESSAGES}`;
-createtStorage.createBucketStorage(bucketName);
+// Create bucket in supabase
+if (databaseManager.isSupabaseConnected()) {
+    const bucketName = `${process.env.BUCKET_NAME_MESSAGES}`;
+    createtStorage.createBucketStorage(bucketName);
+}
+// Create Personal table in supabase
+async function database(){
+    if (databaseManager.isPostgresConnected()){
+        await personalTable.createPersonalDataTable();
+    }
+}
+database();
 
 const PORT = process.env.PORT || 8080;
 const appname = process.env.FLY_APP_NAME;

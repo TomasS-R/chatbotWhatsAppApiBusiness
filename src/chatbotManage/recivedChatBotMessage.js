@@ -9,6 +9,9 @@ async function manageMessagesReceived(userName, type, messages, text, num, messa
         else if (messageTypeReceived) {
             processMessage.ProcessMediaTypesReceived(messageTypeReceived, num);
         }
+        else if (type == "request_welcome") {
+            processMessage.ProcessWelcomeMessage(num);
+        }
         else if (text == "" && type != "unsupported") {
             // Orders cart
             var order = messages["order"];

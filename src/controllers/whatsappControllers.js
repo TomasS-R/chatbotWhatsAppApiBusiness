@@ -2,29 +2,34 @@ const config = require("../config");
 const eventManager = require("../eventManager");
 const messagesDB = require("../databaseFiles/messages");
 const processMessage = require("../shared/processMessage");
+const redisManager = require('../bullmqQueue/redisManager');
 const messagesSave = require("../databaseFiles/tableChats");
 const queueMessage = require("../bullmqQueue/messageQueue");
 const waFront = require("../libraries/whatsappFrontResponse");
-const receivedChatBotMessage = require("../chatbotManage/recivedChatBotMessage");
 const messageUserFiles = require("../frontEnd/messageTypeRecived");
+const receivedChatBotMessage = require("../chatbotManage/recivedChatBotMessage");
+const databaseManager = require("../databaseFiles/databaseManager");
+const personalTable = require("../databaseFiles/personalTable");
 
 // Front end api
 async function show(wa_id,req, res) {
-    try {
-        // The wa_id pass in the file routes.js
-        //console.log("Number show: " + wa_id);
-        const allMessages = await messagesDB.getMessagesOfNumber(wa_id); // Extract most recent messages from user to database
-        //const result = allMessages.rows;
-        res.status(200).json({
-            success: true,
-            data: allMessages,
-        });
-    } catch (e) {
-        res.status(500).json({
-            success: false,
-            error: error.allMessages,
-        });
-        console.log(e);
+    if (databaseManager.isPostgresConnected()) {
+        try {
+            // The wa_id pass in the file routes.js
+            //console.log("Number show: " + wa_id);
+            const allMessages = await messagesDB.getMessagesOfNumber(wa_id); // Extract most recent messages from user to database
+            //const result = allMessages.rows;
+            res.status(200).json({
+                success: true,
+                data: allMessages,
+            });
+        } catch (e) {
+            res.status(500).json({
+                success: false,
+                error: error.allMessages,
+            });
+            console.log(e);
+        }
     }
 };
 
@@ -97,7 +102,12 @@ async function sendMessageUser (body, wa_id, res) {
         });
         const resultjson = JSON.parse(result);
         // save the message in supabase with queue
-        queueMessage.enqueueSendMessage(wa_idresponse,messageId,type,outgoing,body,status,caption,data,date,bot);
+        if (redisManager.isConnected() && databaseManager.isPostgresConnected()) {
+            queueMessage.enqueueWork('DBMessageSend',{wa_idresponse,messageId,type,outgoing,body,status,caption,data,date,bot});
+        }
+        else if (!redisManager.isConnected() && databaseManager.isPostgresConnected()) {
+            await messagesDB.saveMessageSendedUser(wa_idresponse, messageId, type, outgoing, body, status, caption, data, date, bot);
+        }
 
         res.status(200).json({
             success: true,
@@ -167,7 +177,15 @@ async function extractMessageData(req) {
             
             if (statusactual != status && (status == "read" || status == "delivered" || status == "failed"))
             {
-                queueMessage.enqueueSaveStatus(status_id,status,updated_at);
+                if (redisManager.isConnected() && databaseManager.isPostgresConnected()) {
+
+                    queueMessage.enqueueWork('DBMessageStatus',{status_id,status,updated_at});
+
+                } else if (!redisManager.isConnected && databaseManager.isPostgresConnected()) {
+
+                    await messagesDB.updateStatusMessage(status_id,status,updated_at);
+
+                }
 
                 const changeStatus = true;
                 eventManager.eventEmmitMessage(sharedBodyMessageSend, status, recipient, status_id, type, updated_at, caption, data, outgoing, changeStatus, bot);
@@ -235,8 +253,9 @@ async function ReceivedMessage (req, res) {
                 const changeStatus = false;
                 eventManager.eventEmmitMessage(text, status, number, messageid, type, date, caption, data, outgoing, changeStatus, bot); // Emmit message to the front-end
 
-                // Create table in supabase
-                await messagesSave.createTable();
+                if (databaseManager.isPostgresConnected()){
+                    await messagesSave.createTable();
+                }
 
                 // Save the messages and info in supabase
                 if (type != "unsupported" && (type == "text" || type == "interactive" || type == "order")) {
@@ -245,7 +264,9 @@ async function ReceivedMessage (req, res) {
                         console.log("Data message: ", datamessage);
                         await messageUserFiles.customerMakeOrder(datamessage);
                     } else {
-                        await messagesDB.saveMessage(number, messageid, type, outgoing, text, status, caption, data, date, bot);
+                        if (databaseManager.isPostgresConnected()) {
+                            await messagesDB.saveMessage(number, messageid, type, outgoing, text, status, caption, data, date, bot);
+                        }
                     }
                 }
 
@@ -267,7 +288,9 @@ async function ReceivedMessage (req, res) {
                     messageTypeReceived = null;
                 } else {
                     // Save the multimedia messages from user in supabase to send and show in front end
-                    messageUserFiles.saveMediaFileReceived(messageTypeReceived,messages);
+                    if (databaseManager.isPostgresConnected()) {
+                        messageUserFiles.saveMediaFileReceived(messageTypeReceived,messages);
+                    }
                 }
 
                 // Chatbot response
@@ -322,5 +345,4 @@ module.exports = {
     //proccessProducts,
     extractMessageData,
     ReceivedMessage,
-    
 }
