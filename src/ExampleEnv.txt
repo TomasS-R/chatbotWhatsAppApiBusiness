@@ -2,8 +2,8 @@
 ACCESSTOKEN=
 TOKEN=
 IDPHONE=
-VERSION=v15.0
-# Conection to database in supabase
+VERSION=v21.0
+# Conection to database in supabase (optional)
 DATABASEUSER=
 DATABASEPASS=
 DATABASEHOST=
@@ -11,10 +11,10 @@ DATABASEPORT=
 DATABASENAME=
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
-# Name of the Bucket in supabase to store the files from message sended or recived from the user
+# Name of the Bucket in supabase to store the files from message sended or recived from the user (optional)
 BUCKET_NAME_MESSAGES=filesFront
 # App name in fly.io if you want to deploy in this platform
 FLY_APP_NAME=
-# Conection to redis to manage the queue in fly.io you can configure one instance
+# Conection to redis to manage the queue in fly.io you can configure one instance (optional)
 HOSTREDIS=
 PASSWORDREDIS=

@@ -1,15 +1,20 @@
+const path = require("path");
+const { storageSupabase } = require("../config");
 const queueMessage = require("../bullmqQueue/messageQueue");
 //const messagesDB = require("../databaseFiles/messages");
+const whatsappService = require('../services/whatsappService');
 const apiGraph = require("../services/apiProductsCatalogue");
-const { storageSupabase } = require("../config");
-const path = require("path");
 const saveMessagesOrder = require("../saveMessagesOrder");
+const redisManager = require('../bullmqQueue/redisManager');
+const databaseManager = require('../databaseFiles/databaseManager');
 
 async function saveMessagesBotDB(message, response) {
 
     try {
         const jsonMessage = JSON.parse(message);
+        //console.log(jsonMessage);
         const jsonResponse = JSON.parse(response);
+        //console.log(jsonResponse);
 
         const wa_id = jsonResponse?.["contacts"]?.[0]?.["wa_id"];
         const wam_id = jsonResponse?.["messages"]?.[0]?.["id"];
@@ -40,21 +45,23 @@ async function saveMessagesBotDB(message, response) {
             const fileURL = jsonMessage?.[type]?.["link"]
             const baseName = path.basename(fileURL);
             const bucketFilesBot = 'archivos-para-bot';
-            const { data: bucketObject, error: bucketError } = await storageSupabase.storage.from(bucketFilesBot).list();
+            if (databaseManager.isSupabaseConnected()) {
+                const { data: bucketObject, error: bucketError } = await storageSupabase.storage.from(bucketFilesBot).list();
 
-            if (bucketObject) {
-                const fileURL = `${process.env.SUPABASE_URL}/storage/v1/object/public/${bucketFilesBot}/${baseName}`;
-                let body = fileURL;
+                if (bucketObject) {
+                    const fileURL = `${process.env.SUPABASE_URL}/storage/v1/object/public/${bucketFilesBot}/${baseName}`;
+                    let body = fileURL;
 
-                if (type == "document") {
-                    caption = jsonMessage?.[type]?.["caption"];
+                    if (type == "document") {
+                        caption = jsonMessage?.[type]?.["caption"];
+                    }
+
+                    await saveMessagesOrder.savePushAndView(wa_id,wam_id,type,outgoing,body,status,caption,data,date,changeStatus,bot);
+
                 }
-
-                await saveMessagesOrder.savePushAndView(wa_id,wam_id,type,outgoing,body,status,caption,data,date,changeStatus,bot);
-
-            }
-            else {
-                console.log("Error: ",bucketError);
+                else {
+                    console.log("Error: ",bucketError);
+                }
             }
 
         } else if (type == "location") {
@@ -241,7 +248,7 @@ async function saveMessagesBotDB(message, response) {
                 const catalogID = action?.["catalog_id"];
                 const productID = action?.["product_retailer_id"];
 
-                console.log(jsonMessage);
+                //console.log(jsonMessage);
 
                 const fields = "image_url"
 
@@ -272,6 +279,29 @@ async function saveMessagesBotDB(message, response) {
                 await saveMessagesOrder.savePushAndView(wa_id,wam_id,type,outgoing,body,status,caption,data,date,changeStatus,bot);
 
             }
+            else if (typeInteractive == "cta_url"){
+                const headerText = interactive?.["header"]?.["text"]?.replace(/\n/g, ' ');
+                const bodyText = interactive?.["body"]?.["text"]?.replace(/\n/g, ' ');
+                const footerText = interactive?.["footer"]?.["text"]?.replace(/\n/g, ' ');
+                const action = interactive?.["action"];
+
+                const parameters = action?.["parameters"];
+
+                const textParameters = parameters?.["display_text"];
+                const urlParameters = parameters?.["url"];
+
+                const elements = [];
+
+                elements.push({ type: "header", content: headerText });
+                elements.push({ type: "body", content: bodyText });
+                elements.push({ type: "footer", content: footerText });
+                elements.push({ type: "button", content: 'Text: '+textParameters+' Url: '+urlParameters });
+
+                const body = JSON.stringify(elements);
+
+                await saveMessagesOrder.savePushAndView(wa_id,wam_id,type,outgoing,body,status,caption,data,date,changeStatus,bot);
+
+            }
         } else if (type == "reaction") {
             const messageID = jsonMessage?.["message_id"];
             const reaction = jsonMessage?.["reaction"];
@@ -295,9 +325,18 @@ async function sendMessagesInOrder(modelsMessages) {
     for (const message of modelsMessages) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const response = await queueMessage.enqueueSendMessageBot(message);
+        if (redisManager.isConnected() && databaseManager.isPostgresConnected()) {
 
-        await saveMessagesBotDB(message, response);
+            const response = await queueMessage.enqueueWork('sendMessageBot',message);
+            console.log('Response sendMessageInOrder: ', response);
+            await saveMessagesBotDB(message, response);
+        }
+        else if (!redisManager.isConnected() && databaseManager.isPostgresConnected()){
+
+            const response = await whatsappService.SendMessageWhatsApp(message);
+            await saveMessagesBotDB(message, response);
+        }
+
     }
 }
 

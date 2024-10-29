@@ -13,7 +13,8 @@
 ![BusinessChat](https://img.shields.io/badge/-business%20chat-inactive?style=for-the-badge)
 </div>
 
-<details close><summary><h1>English documentation</h1></summary>
+
+<details open><summary><h1>English documentation</h1></summary>
 
 ### 🚀 **You will take your business to the next level** by providing a 100% professional and automated service hosted in the cloud thanks to fly.io and you will be able to connect to the database with the Supabase service in postgres SQL.
 
@@ -143,10 +144,10 @@ fly secrets set SUPER_SECRET_KEY=password1234
 
 ### 🤖 The connection is now successfully established between your bot and the server ✅.
 
-### More documentation coming soon...
+### More documentation of the proyect in <a href="https://xpower.gitbook.io/new-collection/english" target="_blank">gitbook</a>
 </details>
 
-<details close><summary><h1>Español documentacion</h1></summary>
+<details open><summary><h1>Español documentacion</h1></summary>
 
 ### 🚀 **Llevarás tu negocio al siguiente nivel** prestando un servicio 100% profesional y automatizado alojado en la nube gracias a fly.io y podrás conectarte a la base de datos con el servicio Supabase en postgres SQL.
 
@@ -276,5 +277,5 @@ fly secrets set SUPER_SECRET_KEY=password1234
 
 ### 🤖 La conexión se ha establecido correctamente entre tu bot y el servidor  ✅.
 
-### Mas documentacion proximamente...
+### Mas documentacion del proyecto en <a href="https://xpower.gitbook.io/new-collection" target="_blank">gitbook</a>
 </details>

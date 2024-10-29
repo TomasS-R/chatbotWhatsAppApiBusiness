@@ -64,14 +64,55 @@ function Document(number, linkDocument, filename, caption){
         "document": {
             //(URL FOR DOCUMENT .PDF .TXT ETC...)
             "link": linkDocument,
+            /* Filename optional */
             "filename": filename,
+            /* Caption optional */
             "caption": caption
         }
     });
     return data;
 }
 
-function Buttons(number, bodyText, buttonTittle1, buttonTittle2, buttonTittle3){
+function Stickers(number, linkSticker){
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "to": number,
+        "type": "sticker",
+        "sticker": {
+            "link": linkSticker,
+        }
+    });
+    return data;
+}
+
+function Location(number, latitude, longitude, nameloc, addressloc){
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",    
+        "recipient_type": "individual",
+        "to": number,
+        "type": "location",
+        "location": {
+            "latitude": latitude,
+            "longitude": longitude,
+            "name": nameloc,
+            "address": addressloc
+        }
+    });
+    return data;
+}
+
+function Buttons(number, bodyText, buttonTitles){
+
+    const buttonsArray = buttonTitles.slice(0, 3).map((title, index) => {
+        return {
+            type: 'reply',
+            reply: {
+                id: String(index).padStart(5, '0'),
+                title: title
+            }
+        };
+    });
+
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
@@ -83,36 +124,14 @@ function Buttons(number, bodyText, buttonTittle1, buttonTittle2, buttonTittle3){
                 "text": bodyText
             },
             "action": {
-                "buttons": [
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "00001",
-                            "title": buttonTittle1
-                        }
-                    },
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "00002",
-                            "title": buttonTittle2
-                        }
-                    },
-                    {
-                        "type": "reply",
-                        "reply": {
-                            "id": "00003",
-                            "title": buttonTittle3
-                        }
-                    }
-                ]
+                "buttons": buttonsArray
             }
         }
     });
     return data;
 }
 
-function List(number, headerText, bodyText, footerText, buttonTittle, titleSection1){
+function List(number, headerText, bodyText, footerText, buttonTittle, sections){
     const data = JSON.stringify({
         "messaging_product": "whatsapp",    
         "recipient_type": "individual",
@@ -132,56 +151,187 @@ function List(number, headerText, bodyText, footerText, buttonTittle, titleSecti
             },
             "action": {
                 "button": buttonTittle,
-                "sections": [
-                    {
-                        "title": titleSection1,
-                        "rows": [
-                            {
-                                // El ID puede ser numero o texto
-                                "id": "0001",
-                                "title": "1 remera",
-                                "description": "Recibira una remera de forma gratuita"
-                            },
-                            {
-                                "id": "0002",
-                                "title": "1 pantalon",
-                                "description": "Recibira un pantalon de forma gratuita"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Movilidad",
-                        "rows": [
-                            {
-                                "id": "0003",
-                                "title": "1 auto 🚗",
-                                "description": "Recibira un auto"
-                            },
-                            {
-                                "id": "0004",
-                                "title": "1 avion 🛬",
-                                "description": "Recibira un avion"
-                            }
-                        ]
-                    }
-                ]
+                "sections": sections.map(section => {
+                    return {
+                        title: section.title,
+                        rows: section.rows.map(row => {
+                            return {
+                                id: row.id,
+                                title: row.title,
+                                description: row.description
+                            };
+                        })
+                    };
+                })
             }
         }
     });
     return data;
 }
 
-function Location(number){
+function LinkButton(number, headerText, bodyText, footerText, buttonName, url){
     const data = JSON.stringify({
-        "messaging_product": "whatsapp",    
+        "messaging_product": "whatsapp",
         "recipient_type": "individual",
         "to": number,
-        "type": "location",
-        "location": {
-            "latitude": "-34.63543432250713",
-            "longitude": "-58.36476703246046",
-            "name": "Estadio Alberto J. Armando",
-            "address": "Brandsen 805, C1161 CABA"
+        "type": "interactive",
+        "interactive": {
+          "type": "cta_url",
+      
+          /* Header optional */
+          "header": {
+            "type": "text",
+            "text": headerText
+          },
+      
+          /* Body optional */
+          "body": {
+            "text": bodyText
+          },
+      
+          /* Footer optional */
+          "footer": {
+            "text": footerText
+          },
+          "action": {
+            "name": "cta_url",
+            "parameters": {
+              "display_text": buttonName,
+              "url": url
+            }
+          }
+        }
+    });
+    return data;
+}
+
+function ResponseToMessage(number, bodyText, messageID){
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "context": {
+          "message_id": messageID
+        },
+        "to": number,
+        "type": "text",
+        "text": {
+          "preview_url": "False",
+          "body": bodyText,
+        }
+    });
+    return data;
+}
+
+function ImageButton(number, linkImage, bodyText, footerText, buttonTitles){
+
+    const buttonsArray = buttonTitles.slice(0, 3).map((title, index) => {
+        return {
+            type: 'reply',
+            reply: {
+                id: String(index).padStart(5, '0'),
+                title: title
+            }
+        };
+    });
+
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "to": number,
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "header": {
+                "type": "image",
+                "image": {
+                    "link": linkImage
+                }
+            },
+            "body": {
+                "text": bodyText
+            },
+            "footer": {
+                "text": footerText
+            },
+            "action": {
+                "buttons": buttonsArray
+            }
+        }
+    });
+    return data;
+}
+
+function ListProduct(number, headerText, footerText, catalogId, productRetailerId){
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": number,
+        "type": "interactive",
+        "interactive": {
+            "type": "product",
+            "body": {
+                "text": headerText
+            },
+            "footer": {
+                "text": footerText
+            },
+            "action": {
+                "catalog_id": catalogId,
+                "product_retailer_id": productRetailerId
+            }
+        }
+    });
+    return data;
+}
+
+function ListMultipleProducts(number, headerText, bodyText, footerText, catalogId, sections){
+
+    const sectionObjects = sections.map(section => {
+        return {
+            title: section.title,
+            product_items: section.productRetailerIds.map(id => {
+                return { product_retailer_id: id };
+            })
+        };
+    });
+
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "to" : number,
+        "type": "interactive",
+        "interactive": {
+            "type": "product_list",
+            "header":{
+                "type": "text",
+                "text": headerText
+            },
+            "body":{
+                "text": bodyText
+            },
+            "footer":{
+                "text": footerText
+            },
+            "action": {
+                "catalog_id": catalogId,
+                "sections": sectionObjects
+            }
+        }
+    });
+    return data;
+}
+
+function requestLocation (number, bodyText, buttonName){
+    const data = JSON.stringify({
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "type": "interactive",
+        "to": number,
+        "interactive": {
+            "type": "location_request_message",
+            "body": {
+                "text": bodyText
+            },
+            "action": {
+                "name": buttonName
+            }
         }
     });
     return data;
@@ -193,7 +343,14 @@ module.exports = {
     Audio,
     Video,
     Document,
+    Stickers,
+    Location,
     Buttons,
     List,
-    Location
+    LinkButton,
+    ResponseToMessage,
+    ImageButton,
+    ListProduct,
+    ListMultipleProducts,
+    requestLocation
 };

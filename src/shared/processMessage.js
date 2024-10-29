@@ -1,6 +1,7 @@
 const {parse} = require("libphonenumber-js");
 const databaseAccess = require("../databaseFiles/database");
 const whatsappService = require("../services/whatsappService");
+const databaseManager = require("../databaseFiles/databaseManager");
 // Import languages files for interaction
 const whatsappModelES = require("../languages/Español/whatsappModelsES");
 const whatsappModelEN = require("../languages/English/whatsappModelsEN");
@@ -8,6 +9,7 @@ const dictionaryModuleES = require("../languages/Español/dictionaryES");
 const dictionaryModuleEN = require("../languages/English/dictionaryEN");
 const processMessageEs = require("../languages/Español/processES");
 const processMessageEn = require("../languages/English/processEN");
+const whatsappModels = require("../shared/models");
 
 
 function sendMessagesInOrder(modelsMessages) {
@@ -33,7 +35,10 @@ function numero(number){
 
     let numeroSin9 = number;
     if (country == "AR") {
-        numeroSin9 = number.replace("9","",1);
+        numeroSin9 = number.replace("549", "54");
+    }
+    else if(country == "MX"){
+        numeroSin9 = number.replace("521", "52");
     }
     
     return numeroSin9;
@@ -41,10 +46,12 @@ function numero(number){
 
 async function numSavedVerify(number){
     // Check if the number is saved in the database
-    const verify = await databaseAccess.verifyNum(number);
-    if (verify == false) {
-        // Save number in database for first unique time
-        await databaseAccess.saveNum(number);
+    if (databaseManager.isPostgresConnected()) {
+        const verify = await databaseAccess.verifyNum(number);
+        if (verify == false) {
+            // Save number in database for first unique time
+            await databaseAccess.saveNum(number);
+        }
     }
 }
 
@@ -86,7 +93,7 @@ async function Process(textUser,number,user) {
 
             // Response communication in Spanish
             let answer = dictionaryModuleES.españolResponseSpanish(user);
-            let model = whatsappModelES.MessageText(answer,number);
+            let model = whatsappModels.Text(answer,number);
             modelsMessages.push(model);
 
         }
@@ -95,7 +102,7 @@ async function Process(textUser,number,user) {
 
             // Response communication in Spanish
             let answer = dictionaryModuleEN.englishResponseEnglish(user);
-            let model = whatsappModelEN.MessageText(answer,number);
+            let model = whatsappModels.Text(answer,number);
             modelsMessages.push(model);
 
         }
@@ -107,7 +114,7 @@ async function Process(textUser,number,user) {
 
                 const namefromDB = await databaseAccess.GetName(number);
                 let answer = dictionaryModuleES.españolResponseNameSpanish(namefromDB);
-                let model = whatsappModelES.MessageText(answer,number);
+                let model = whatsappModels.Text(answer,number);
                 modelsMessages.push(model);
 
             }
@@ -166,9 +173,31 @@ async function Process(textUser,number,user) {
         };
     };
     
-    // Enviar mensajes en orden
+    // Send messages in order
     sendMessagesInOrder(modelsMessages);
 
+}
+
+// Function to process the welcome message you need activate this function in https://business.facebook.com/wa/manage/phone-numbers
+// Go to Account tools > Automatization > Welcome message (Activate)
+async function ProcessWelcomeMessage(number){
+    await numSavedVerify(number);
+    let modelsMessages = [];
+
+    let validationLang = await databaseAccess.verifyLanguage(number);
+    const languageFromDB = await databaseAccess.GetLanguage(number);
+    let validLanguage = ["español", "english"];
+
+    if (!validLanguage.includes(languageFromDB) && validationLang == false) {	
+        // Language selection
+        let modelLanguage = whatsappModelES.messageButtonLanguage(number);
+        modelsMessages.push(modelLanguage);
+
+        databaseAccess.setLanguageQuestionAsked(number);
+    } else {
+        console.log("Language already selected, no welcome message!");
+    }
+    sendMessagesInOrder(modelsMessages);
 }
 
 // Function to process multimedia messages/files/documents/etc...
@@ -215,6 +244,7 @@ async function ProcessProductCartLang(number,products){
 module.exports = {
     numero,
     Process,
+    ProcessWelcomeMessage,
     ProcessMediaTypesReceived,
     ProcessProductCartLang,
 }
